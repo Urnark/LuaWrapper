@@ -13,6 +13,8 @@ public:
 	};
 };
 
+// TODO: Add more Lua_Sates
+
 int main()
 {
 	LuaManager* luaManager = new LuaManager();
