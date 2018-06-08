@@ -218,6 +218,9 @@
     <ClInclude Include="Wrapper\FunctionWrapper\LuaFunctionsWrapper.h" />
     <ClInclude Include="Wrapper\Manager\LuaManager.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Wrapper\TestScripts\Test1.lua" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

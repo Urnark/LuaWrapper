@@ -222,4 +222,7 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Wrapper\TestScripts\Test1.lua" />
+  </ItemGroup>
 </Project>
