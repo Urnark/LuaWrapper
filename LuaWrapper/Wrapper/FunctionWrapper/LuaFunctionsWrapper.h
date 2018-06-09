@@ -147,7 +147,7 @@ public:
 	}
 
 	static std::string GenerateFuncName(const std::string & funcName, ILuaMember* luaMember) {
-		return funcName + std::to_string(luaMember->GetID());
+		return  "_" + std::to_string(luaMember->GetID()) + "_" + funcName;
 	}
 
 
