@@ -24,7 +24,7 @@ static int luaPrintC(lua_State* L)
 	std::string str = LuaManager::GetString();
 
 	ILuaMember* luaMember = LuaManager::GetObjectPtr<ILuaMember>(luaObject);
-	LuaFunctionsWrapper::CallMemFunc<void>(LuaFunctionsWrapper::GenerateFuncName(function, luaMember), std::forward<std::string>(str));
+	LuaFunctionsWrapper::CallMemFunc<void>(std::to_string(LuaManager::GetCurrentStateIndex()) + LuaFunctionsWrapper::GenerateFuncName(function, luaMember), std::forward<std::string>(str));
 	return 0;
 }
 
@@ -51,6 +51,14 @@ int main()
 	// Call lua function
 	luaManager->CallLuaFunc<void>("HelloWorld");
 	luaManager->CallLuaFunc<void>("Update", &t, t.GetLuaObject());
+
+	luaManager->AddLuaState("TestLuaState");
+	luaManager->SetState("TestLuaState");
+
+	LuaFunctionsWrapper::RegisterCFunction("Testing", &t, &Test::Testing, _1);
+
+	luaManager->LoadScript("Wrapper/TestScripts/Test2.lua");
+	luaManager->CallLuaFunc<void>("HelloWorld");
 
 	std::system("pause");
 

@@ -13,8 +13,10 @@
 
 #define LUA_GETTOP(var, L) LUA_GETTOP_I(var, L, -1)
 
-lua_State * LuaManager::mL = nullptr;
+std::vector<lua_State*> LuaManager::mLs;
 std::vector<std::string> LuaManager::mMetaTables;
+unsigned int LuaManager::mCurrentState = 0;
+std::map<std::string, unsigned int> LuaManager::mLuaStateMap;
 
 LuaManager::LuaManager()
 {
@@ -24,24 +26,53 @@ LuaManager::~LuaManager()
 {
 }
 
-void LuaManager::InitLuaManager()
+void LuaManager::InitLuaManager(const std::string & pLuaStateName)
 {
-	mL = luaL_newstate();
-	luaL_openlibs(mL);
+	CloseLuaManager();
+	mLs.push_back(luaL_newstate());
+	luaL_openlibs(mLs[mLs.size() - 1]);
+	mCurrentState = 0;
+	mLuaStateMap[pLuaStateName] = mLs.size() - 1;
 }
 
 void LuaManager::CloseLuaManager()
 {
-	lua_close(mL);
+	for (int i = 0; i < mLs.size(); i++)
+	{
+		lua_close(mLs[i]);
+	}
+}
+
+void LuaManager::SetState(unsigned int pLuaStateIndex)
+{
+	if (pLuaStateIndex >= 0 && pLuaStateIndex < mLs.size())
+		mCurrentState = pLuaStateIndex;
+	else
+		std::cout << "ERROR: Index [" << pLuaStateIndex << "] out of bounds for the lua state" << std::endl;
+}
+
+void LuaManager::SetState(const std::string & pLuaStateName)
+{
+	if (mLuaStateMap.find(pLuaStateName) != mLuaStateMap.end())
+		mCurrentState = mLuaStateMap[pLuaStateName];
+	else
+		std::cout << "ERROR: The Lua state [" << pLuaStateName << "] do not exist in the LuaManager" << std::endl;
+}
+
+void LuaManager::AddLuaState(const std::string & pLuaStateName)
+{
+	mLs.push_back(luaL_newstate());
+	luaL_openlibs(mLs[mLs.size() - 1]);
+	mLuaStateMap[pLuaStateName] = mLs.size() - 1;
 }
 
 void LuaManager::LoadScript(const std::string & pPath)
 {
-	int error = luaL_loadfile(mL, pPath.c_str()) || lua_pcall(mL, 0, 0, 0);
+	int error = luaL_loadfile(GetCurrentState(), pPath.c_str()) || lua_pcall(GetCurrentState(), 0, 0, 0);
 	if (error)
 	{
 		std::cout << "ERROR: could not load lua script [" << pPath << "]" << std::endl;
-		lua_pop(mL, 1);
+		lua_pop(GetCurrentState(), 1);
 		PrintStackSize();
 	}
 	else
@@ -53,46 +84,51 @@ void LuaManager::LoadScript(const std::string & pPath)
 
 void LuaManager::CallLuaFunction(const std::string & pFuncName)
 {
-	lua_getglobal(mL, pFuncName.c_str());
+	lua_getglobal(GetCurrentState(), pFuncName.c_str());
 	CallLuaFunction(pFuncName, 0, 0);
 }
 
 void LuaManager::CallLuaFunction(const std::string & pFuncName, int pArg, int pResults)
 {
 	if (pArg == 0 && pResults != 0)
-		lua_getglobal(mL, pFuncName.c_str());
-	int error = lua_pcall(mL, pArg, pResults, 0);
+		lua_getglobal(GetCurrentState(), pFuncName.c_str());
+	int error = lua_pcall(GetCurrentState(), pArg, pResults, 0);
 	if (error)
 	{
 		std::cout << "ERROR: could not call function: [" << pFuncName << "]" << std::endl;
-		lua_pop(mL, 1);
+		lua_pop(GetCurrentState(), 1);
 		PrintStackSize();
 	}
 }
 
 lua_State * LuaManager::GetCurrentState()
 {
-	return mL;
+	return mLs[mCurrentState];
+}
+
+unsigned int LuaManager::GetCurrentStateIndex()
+{
+	return mCurrentState;
 }
 
 void LuaManager::PushInteger(int pInteger)
 {
-	lua_pushinteger(mL, pInteger);
+	lua_pushinteger(GetCurrentState(), pInteger);
 }
 
 void LuaManager::PushFloat(float pFloat)
 {
-	lua_pushnumber(mL, pFloat);
+	lua_pushnumber(GetCurrentState(), pFloat);
 }
 
 void LuaManager::PushString(std::string pString)
 {
-	lua_pushstring(mL, pString.c_str());
+	lua_pushstring(GetCurrentState(), pString.c_str());
 }
 
 void LuaManager::PushBool(bool pBool)
 {
-	lua_pushboolean(mL, pBool);
+	lua_pushboolean(GetCurrentState(), pBool);
 }
 
 void LuaManager::PushInteger(lua_State *& pL, int pInteger)
@@ -118,28 +154,28 @@ void LuaManager::PushBool(lua_State *& pL, bool pBool)
 int LuaManager::GetInteger()
 {
 	int integer;
-	LUA_GETTOP(integer, mL);
+	LUA_GETTOP(integer, GetCurrentState());
 	return integer;
 }
 
 float LuaManager::GetFloat()
 {
 	float number;
-	LUA_GETTOP(number, mL);
+	LUA_GETTOP(number, GetCurrentState());
 	return number;
 }
 
 std::string LuaManager::GetString()
 {
 	std::string string;
-	LUA_GETTOP(string, mL);
+	LUA_GETTOP(string, GetCurrentState());
 	return string;
 }
 
 bool LuaManager::GetBool()
 {
 	bool boolean;
-	LUA_GETTOP(boolean, mL);
+	LUA_GETTOP(boolean, GetCurrentState());
 	return boolean;
 }
 
@@ -176,7 +212,7 @@ int LuaManager::GetInteger(int params)
 {
 	int index = 0 - params;
 	int integer;
-	LUA_GETTOP_I(integer, mL, index);
+	LUA_GETTOP_I(integer, GetCurrentState(), index);
 	return integer;
 }
 
@@ -184,7 +220,7 @@ float LuaManager::GetFloat(int params)
 {
 	int index = 0 - params;
 	float number;
-	LUA_GETTOP_I(number, mL, index);
+	LUA_GETTOP_I(number, GetCurrentState(), index);
 	return number;
 }
 
@@ -192,7 +228,7 @@ std::string LuaManager::GetString(int params)
 {
 	int index = 0 - params;
 	std::string string;
-	LUA_GETTOP_I(string, mL, index);
+	LUA_GETTOP_I(string, GetCurrentState(), index);
 	return string;
 }
 
@@ -200,7 +236,7 @@ bool LuaManager::GetBool(int params)
 {
 	int index = 0 - params;
 	bool boolean;
-	LUA_GETTOP_I(boolean, mL, index);
+	LUA_GETTOP_I(boolean, GetCurrentState(), index);
 	return boolean;
 }
 
@@ -225,19 +261,19 @@ std::string LuaManager::GetMetaTableAndCheck(const std::string & pObjectName)
 void LuaManager::RegisterObjectFunctions(const std::string & pObjectName, luaL_Reg sMonsterRegs[])
 {
 	std::string metatable = "Meta" + pObjectName;
-	if (luaL_newmetatable(mL, metatable.c_str()) == 0)
+	if (luaL_newmetatable(GetCurrentState(), metatable.c_str()) == 0)
 		std::cout << "ERROR: metatable with name [" << metatable << "] already exists" << std::endl;
 	else
 	{
 		mMetaTables.push_back(metatable);
-		luaL_setfuncs(mL, sMonsterRegs, 0);
-		lua_pushvalue(mL, -1);
-		lua_setfield(mL, -1, "__index");
-		lua_setglobal(mL, pObjectName.c_str());
+		luaL_setfuncs(GetCurrentState(), sMonsterRegs, 0);
+		lua_pushvalue(GetCurrentState(), -1);
+		lua_setfield(GetCurrentState(), -1, "__index");
+		lua_setglobal(GetCurrentState(), pObjectName.c_str());
 	}
 }
 
 void LuaManager::PrintStackSize()
 {
-	std::cout << "Size of Lua stack: " << lua_gettop(mL) << std::endl;
+	std::cout << "Size of Lua stack: " << lua_gettop(GetCurrentState()) << std::endl;
 }

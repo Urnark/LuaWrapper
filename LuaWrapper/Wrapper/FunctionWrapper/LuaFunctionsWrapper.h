@@ -106,6 +106,7 @@ private:
 	static void RegisterCaller(std::string name, Clazz*& pClass, Ret(Clazz::*Callback)(Args...), T... p) {
 		const int params = sizeof...(Args);
 		ILuaMember* luaMember = dynamic_cast<ILuaMember*>(pClass);
+		name = std::to_string(LuaManager::GetCurrentStateIndex()) + name;
 		if (!luaMember)
 		{
 			std::cout << "Class of C function [" << name << "] is not a Lua member" << std::endl;
@@ -124,7 +125,7 @@ private:
 		else
 		{
 			lua_pushlightuserdata(LuaManager::GetCurrentState(), pPointer);
-			lua_pushstring(LuaManager::GetCurrentState(), luafuncname.c_str());
+			lua_pushstring(LuaManager::GetCurrentState(), (std::to_string(LuaManager::GetCurrentStateIndex()) + luafuncname).c_str());
 			lua_pushcclosure(LuaManager::GetCurrentState(), LuaFunctionsWrapper::FunctionWrapper<Ret, Clazz, Args...>, 1);
 			lua_setglobal(LuaManager::GetCurrentState(), luafuncname.c_str());
 			lua_remove(LuaManager::GetCurrentState(), -1);

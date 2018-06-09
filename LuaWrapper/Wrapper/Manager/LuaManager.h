@@ -3,12 +3,13 @@
 #include "../../Lua/lua.hpp"
 
 #include "../Defined.h"
+#include "../EntityHandeler/ILuaMember.h"
 
 #include <string>
 #include <iostream>
 #include <vector>
-#include "../EntityHandeler/ILuaMember.h"
 #include <sstream>
+#include <map>
 
 #include <typeinfo>
 
@@ -138,12 +139,16 @@ public:
 	LuaManager();
 	~LuaManager();
 
-	static void InitLuaManager();
+	static void InitLuaManager(const std::string & pLuaStateName = "Init");
 	static void CloseLuaManager();
+	static void SetState(unsigned int pLuaStateIndex);
+	static void SetState(const std::string & pLuaStateName);
+	static void AddLuaState(const std::string & pLuaStateName);
 
 	static void LoadScript(const std::string & pPath);
 
 	static lua_State * GetCurrentState();
+	static unsigned int GetCurrentStateIndex();
 
 	static void PushInteger(int pInteger);
 	static void PushFloat(float pFloat);
@@ -188,9 +193,11 @@ public:
 	static T* GetObjectPtrEmpty(const std::string & pLuaObjectName, const std::string & pObjectName, int pIndex = 1);
 
 private:
-	static lua_State * mL;
+	static std::vector<lua_State*> mLs;// Changed
+	static unsigned int mCurrentState;
 	static std::vector<std::string> mMetaTables;
 
+	static std::map<std::string, unsigned int> mLuaStateMap;
 private:
 	static void CallLuaFunction(const std::string & pFuncName);
 	static void CallLuaFunction(const std::string & pFuncName, int pArg, int pResults);
@@ -202,7 +209,7 @@ inline T * LuaManager::GetObjectPtr(const std::string & pObjectName, int pIndex)
 {
 	T* objectPtr = nullptr;
 
-	void* ptr = luaL_testudata(mL, pIndex, GetMetaTable(pObjectName).c_str());
+	void* ptr = luaL_testudata(GetCurrentState(), pIndex, GetMetaTable(pObjectName).c_str());
 	if (ptr != nullptr)
 		objectPtr = *(T**)ptr;
 
@@ -212,8 +219,8 @@ inline T * LuaManager::GetObjectPtr(const std::string & pObjectName, int pIndex)
 template<typename T>
 inline T * LuaManager::GetObjectPtrEmpty(const std::string & pLuaObjectName, const std::string & pObjectName, int pIndex)
 {
-	lua_getglobal(mL, pLuaObjectName.c_str());
+	lua_getglobal(GetCurrentState(), pLuaObjectName.c_str());
 	T* ptr = LuaManager::GetObjectPtr<Enemy>(pObjectName.c_str());
-	lua_pop(mL, -1);
+	lua_pop(GetCurrentState(), -1);
 	return ptr;
 }
