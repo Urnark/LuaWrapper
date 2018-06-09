@@ -18,19 +18,7 @@ public:
 	};
 };
 
-static int luaPrintC(lua_State* L)
-{
-	std::string function = LuaManager::GetString();
-	std::string luaObject = LuaManager::GetString();
-
-	std::string str = LuaManager::GetString();
-
-	ILuaMember* luaMember = LuaManager::GetObjectPtr<ILuaMember>(luaObject);
-	LuaFunctionsWrapper::CallMemFunc<void>(std::to_string(LuaManager::GetCurrentStateIndex()) + LuaFunctionsWrapper::GenerateFuncName(function, luaMember), std::forward<std::string>(str));
-	return 0;
-}
-
-// TODO: 
+// TODO: remove placeholders from function call
 
 int main()
 {

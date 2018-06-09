@@ -16,28 +16,6 @@
 class LuaManager
 {
 private:
-	/*template <typename Arg>
-	inline static void _push(lua_State * pL, Arg arg) {
-		std::cout << "ERROR: Could not push [" << arg << "] of type [" << typeid(arg).name() << "] to the stack" << std::endl;
-		return;
-	}
-	template <>
-	inline static void _push<int>(lua_State * pL, int arg) {
-		std::cout << "pus_int: " << arg << std::endl;
-		LuaManager::PushInteger(pL, arg);
-	}
-	template <>
-	inline static void _push<bool>(lua_State * pL, bool arg) {
-		LuaManager::PushBool(pL, arg);
-	}
-	template <>
-	inline static void _push<std::string>(lua_State * pL, std::string arg) {
-		LuaManager::PushString(pL, arg);
-	}
-	template <>
-	inline static void _push<float>(lua_State * pL, float arg) {
-		LuaManager::PushFloat(pL, arg);
-	}*/
 	inline static void _push(lua_State * pL, ILuaMember* arg) {
 		ILuaMember** ptr = reinterpret_cast<ILuaMember**>(lua_newuserdata(LuaManager::GetCurrentState(), sizeof(ILuaMember*)));
 		*ptr = arg;

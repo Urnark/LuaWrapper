@@ -130,7 +130,6 @@ private:
 			lua_pushstring(LuaManager::GetCurrentState(), newName.c_str());
 			lua_pushcclosure(LuaManager::GetCurrentState(), LuaFunctionsWrapper::FunctionWrapper<Ret, Clazz, Args...>, 2);
 			lua_setglobal(LuaManager::GetCurrentState(), luafuncname.c_str());
-			//lua_remove(LuaManager::GetCurrentState(), -1);
 		}
 	}
 
