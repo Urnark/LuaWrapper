@@ -178,10 +178,29 @@ public:
 	static std::string GetString(int params);
 	static bool GetBool(int params);
 
+	template<typename T>
+	static T* GetUserData() {
+		return GetUserData<T>(GetCurrentState());
+	};
+	template<typename T>
+	static T* GetUserData(int index) {
+		T* obj = *(T **)lua_touserdata(LuaManager::GetCurrentState(), index);
+		lua_remove(LuaManager::GetCurrentState(), index);
+		return obj;
+	};
+	template<typename T>
+	static T* GetUserData(const std::string & metaTable) {
+		T* obj = *(T **)luaL_testudata(LuaManager::GetCurrentState(), 1, metaTable.c_str());
+		lua_remove(LuaManager::GetCurrentState(), -1);
+		return obj;
+	};
+
 	static std::string GetMetaTable(const std::string & pObjectName);
 	static std::string GetMetaTableAndCheck(const std::string & pObjectName);
 
 	static void PrintStackSize();
+	static const char* GetType();
+	static const char* GetType(int index);
 
 	/* C++ functions */
 	// Need to be called before the script that has the functions is loaded
@@ -193,6 +212,8 @@ public:
 	static T* GetObjectPtr(const std::string & pObjectName, int pIndex = 1);
 	template<typename T>
 	static T* GetObjectPtrEmpty(const std::string & pLuaObjectName, const std::string & pObjectName, int pIndex = 1);
+
+	static const char* GetFunctionNameFromLua();
 
 private:
 	static std::vector<lua_State*> mLs;// Changed

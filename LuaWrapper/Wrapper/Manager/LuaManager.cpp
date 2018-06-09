@@ -98,6 +98,20 @@ void LuaManager::LoadScript(unsigned int pLuaStateIndex, const std::string & pPa
 	SetState(luaStateIndex);
 }
 
+const char * LuaManager::GetFunctionNameFromLua()
+{
+	lua_Debug ar;
+	if (!lua_getstack(GetCurrentState(), 0, &ar))  /* no stack frame? */
+		ar.name = "?"; /* Some default ? */
+	else
+	{
+		lua_getinfo(GetCurrentState(), "n", &ar);
+		if (ar.name == NULL)
+			ar.name = "?"; /* <-- PUT DEFAULT HERE */
+	}
+	return ar.name;
+}
+
 void LuaManager::CallLuaFunction(const std::string & pFuncName)
 {
 	lua_getglobal(GetCurrentState(), pFuncName.c_str());
@@ -285,6 +299,11 @@ void LuaManager::RegisterObjectFunctions(const std::string & pObjectName, luaL_R
 		luaL_setfuncs(GetCurrentState(), sMonsterRegs, 0);
 		lua_pushvalue(GetCurrentState(), -1);
 		lua_setfield(GetCurrentState(), -1, "__index");
+		// Testing
+		lua_pushstring(GetCurrentState(), "obj");
+		lua_pushstring(GetCurrentState(), "0");
+		lua_settable(GetCurrentState(), -3);
+		////////////
 		lua_setglobal(GetCurrentState(), pObjectName.c_str());
 	}
 }
@@ -292,4 +311,14 @@ void LuaManager::RegisterObjectFunctions(const std::string & pObjectName, luaL_R
 void LuaManager::PrintStackSize()
 {
 	std::cout << "Size of Lua stack: " << lua_gettop(GetCurrentState()) << std::endl;
+}
+
+const char * LuaManager::GetType()
+{
+	return GetType(-1);
+}
+
+const char * LuaManager::GetType(int index)
+{
+	return luaL_typename(LuaManager::GetCurrentState(), index);
 }

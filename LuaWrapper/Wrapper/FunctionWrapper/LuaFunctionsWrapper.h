@@ -93,7 +93,7 @@ private:
 	inline static int FunctionWrapper(lua_State * L) {
 		const int params = sizeof...(Args);
 		Clazz* luaMember = reinterpret_cast<Clazz*>(lua_touserdata(LuaManager::GetCurrentState(), lua_upvalueindex(1)));
-		std::string function = lua_tostring(LuaManager::GetCurrentState(), lua_upvalueindex(1));
+		std::string function = lua_tostring(LuaManager::GetCurrentState(), lua_upvalueindex(2));
 		
 		CallAndPush<Ret, Args...>(function);
 		if (!eq<void, Ret>::result)
@@ -124,11 +124,12 @@ private:
 			std::cout << "ERROR: wrong class in [" << __func__ << "]" << std::endl;
 		else
 		{
+			std::string newName = std::to_string(LuaManager::GetCurrentStateIndex()) + LuaFunctionsWrapper::GenerateFuncName(luafuncname, pPointer);
 			lua_pushlightuserdata(LuaManager::GetCurrentState(), pPointer);
-			lua_pushstring(LuaManager::GetCurrentState(), (std::to_string(LuaManager::GetCurrentStateIndex()) + LuaFunctionsWrapper::GenerateFuncName(luafuncname, pPointer)).c_str());
-			lua_pushcclosure(LuaManager::GetCurrentState(), LuaFunctionsWrapper::FunctionWrapper<Ret, Clazz, Args...>, 1);
+			lua_pushstring(LuaManager::GetCurrentState(), newName.c_str());
+			lua_pushcclosure(LuaManager::GetCurrentState(), LuaFunctionsWrapper::FunctionWrapper<Ret, Clazz, Args...>, 2);
 			lua_setglobal(LuaManager::GetCurrentState(), luafuncname.c_str());
-			lua_remove(LuaManager::GetCurrentState(), -1);
+			//lua_remove(LuaManager::GetCurrentState(), -1);
 		}
 	}
 
@@ -147,6 +148,28 @@ public:
 	static void RegisterObject(ILuaMember* member) {
 		unsigned int luaObjectIndex = freeLuaObject++;
 		member->SetLuaObject(std::to_string(luaObjectIndex));
+	};
+
+	template<typename Ret, typename Clazz, typename ...Args>
+	inline static int FunctionWrapper2(lua_State * L) {
+		Clazz* luaMember = LuaManager::GetUserData<Clazz>(-lua_gettop(LuaManager::GetCurrentState()));
+		std::string functionName = std::to_string(LuaManager::GetCurrentStateIndex()) + LuaFunctionsWrapper::GenerateFuncName(LuaManager::GetFunctionNameFromLua(), luaMember);
+		
+		CallAndPush<Ret, Args...>(functionName);
+		if (!eq<void, Ret>::result)
+			return 1;
+		return 0;
+	}
+
+	template<typename Ret, typename Clazz, typename ...Args>
+	static void RegisterCObject(std::string functionName, ILuaMember* member, Ret(Clazz::*Callback)(Args...)) {
+		RegisterObject(member);
+		std::string newName = std::to_string(LuaManager::GetCurrentStateIndex()) + LuaFunctionsWrapper::GenerateFuncName(functionName, member);
+		luaL_Reg functionList[] = {
+			{ functionName.c_str(), LuaFunctionsWrapper::FunctionWrapper2<Ret, Clazz, Args...> },
+			{ NULL, NULL }
+		};
+		LuaManager::RegisterObjectFunctions(member->GetLuaObject(), functionList);
 	};
 };
 
