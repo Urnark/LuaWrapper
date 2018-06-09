@@ -81,19 +81,19 @@ private:
 public:
 	// Push values to lua
 	template <typename Arg>
-	static void push(lua_State * L, Arg&& arg) {
+	static void Push(lua_State * L, Arg&& arg) {
 		//return _push<Arg>(L, std::forward<Arg>(arg));
 		return _push(L, std::forward<Arg>(arg));
 	}
 	
 	template <typename... Args>
-	static void push_all(lua_State * L, Args&&... args) {
-		std::initializer_list<int>{(push<Args>(L, std::forward<Args>(args)), 0)...};
+	static void Push_all(lua_State * L, Args&&... args) {
+		std::initializer_list<int>{(Push<Args>(L, std::forward<Args>(args)), 0)...};
 	}
 
 	// Get values from lua
 	template <typename Ret>
-	static Ret get(lua_State * L) {
+	static Ret Get(lua_State * L) {
 		return _get<Ret>(L);
 	}
 	
@@ -103,20 +103,20 @@ public:
 			static Ret CallLuaFunc(const std::string & pFuncName, int r, Args && ... args) {
 				const int params = sizeof...(args);
 				lua_getglobal(LuaManager::GetCurrentState(), pFuncName.c_str());
-				push_all(LuaManager::GetCurrentState(), std::forward<Args>(args)...);
+				Push_all(LuaManager::GetCurrentState(), std::forward<Args>(args)...);
 				if (params == 0)
 					lua_pop(LuaManager::GetCurrentState(), -1);
 				if (r == 0)
 					r = 1;
 				LuaManager::CallLuaFunction(pFuncName, params, r);
-				return get<Ret>(LuaManager::GetCurrentState());
+				return Get<Ret>(LuaManager::GetCurrentState());
 			}
 		};
 		template<> struct Function<void, Args...> {
 			static void CallLuaFunc(const std::string & pFuncName, int r, Args&& ... args) {
 				const int params = sizeof...(args);
 				lua_getglobal(LuaManager::GetCurrentState(), pFuncName.c_str());
-				push_all(LuaManager::GetCurrentState(), std::forward<Args>(args)...);
+				Push_all(LuaManager::GetCurrentState(), std::forward<Args>(args)...);
 				LuaManager::CallLuaFunction(pFuncName, params, r);
 			}
 		};
@@ -142,8 +142,6 @@ public:
 	static void CloseLuaManager();
 
 	static void LoadScript(const std::string & pPath);
-	static void CallLuaFunction(const std::string & pFuncName);
-	static void CallLuaFunction(const std::string & pFuncName, int pArg, int pResults);
 
 	static lua_State * GetCurrentState();
 
@@ -192,6 +190,10 @@ public:
 private:
 	static lua_State * mL;
 	static std::vector<std::string> mMetaTables;
+
+private:
+	static void CallLuaFunction(const std::string & pFuncName);
+	static void CallLuaFunction(const std::string & pFuncName, int pArg, int pResults);
 
 };
 
