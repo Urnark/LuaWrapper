@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Wrapper\Defined.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Lua\lapi.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -129,11 +126,11 @@
     <ClCompile Include="Wrapper\Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Wrapper\LuaWrapperDefined.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Wrapper\Defined.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Lua\lapi.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -219,6 +216,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Wrapper\EntityHandeler\ILuaMember.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Wrapper\LuaWrapperDefined.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

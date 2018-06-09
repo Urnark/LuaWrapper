@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-#include "../Defined.h" // Only for DEBUG
+#include "../LuaWrapperDefined.h" // Only for DEBUG
 
 class ILuaMember
 {

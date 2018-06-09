@@ -1,8 +1,6 @@
 
 #include "FunctionWrapper\LuaFunctionsWrapper.h"
 
-static const bool DEBUG = true;
-
 #include <iostream>
 
 class Test : public ILuaMember
@@ -32,23 +30,29 @@ static int luaPrintC(lua_State* L)
 	return 0;
 }
 
-// TODO: Add more Lua_Sates
+// TODO: 
 
 int main()
 {
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+	//_CrtSetBreakAlloc(189);
+
 	LuaManager::InitLuaManager();
 	LuaManager::AddLuaState("TestLuaState");
 
 	Test t;
-	/*LuaFunctionsWrapper::RegisterObject(&t);
-	luaL_Reg functionList[] = {
-		{ "CPrint", luaPrintC },
+	Test t2;
+	luaL_Reg mFuncList[] = {
+		{ "Print", LuaFunctionsWrapper::GetRegisterFunction("Print", &t, &Test::Print, _1) },
 		{ NULL, NULL }
 	};
-	LuaManager::RegisterObjectFunctions(t.GetLuaObject(), functionList);*/
+	LuaFunctionsWrapper::RegisterCObject(&t, mFuncList);
 
-	LuaFunctionsWrapper::RegisterCFunction("Print", &t, &Test::Print, _1);
-	LuaFunctionsWrapper::RegisterCObject("Print", &t, &Test::Print);
+	luaL_Reg mFuncList2[] = {
+		{ "Print", LuaFunctionsWrapper::GetRegisterFunction("Print", &t2, &Test::Print, _1) },
+		{ NULL, NULL }
+	};
+	LuaFunctionsWrapper::RegisterCObject(&t2, mFuncList2);
 
 	LuaManager::LoadScript("Wrapper/TestScripts/Test1.lua");
 	LuaManager::LoadScript("TestLuaState", "Wrapper/TestScripts/Test2.lua");
@@ -63,6 +67,7 @@ int main()
 	LuaManager::CallLuaFunc<void>("HelloWorld");
 	//LuaManager::CallLuaFunc<void>("Update", &t/*, t.GetLuaObject()*/);
 	LuaManager::CallLuaFunc<void>("Update", &t);
+	LuaManager::CallLuaFunc<void>("Update", &t2);
 
 	LuaManager::SetState("TestLuaState");
 	LuaManager::CallLuaFunc<void>("HelloWorld");

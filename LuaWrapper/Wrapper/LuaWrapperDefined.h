@@ -1,6 +1,6 @@
 #pragma once
 
-class Defined
+class LuaWrapperDefined
 {
 public:
 	static const bool DEBUG;

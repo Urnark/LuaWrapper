@@ -77,7 +77,7 @@ void LuaManager::LoadScript(const std::string & pPath)
 	}
 	else
 	{
-		if (Defined::DEBUG)
+		if (LuaWrapperDefined::DEBUG)
 			std::cout << "[" << pPath << "] Script loaded successfully" << std::endl;
 	}
 }
@@ -300,8 +300,8 @@ void LuaManager::RegisterObjectFunctions(const std::string & pObjectName, luaL_R
 		lua_pushvalue(GetCurrentState(), -1);
 		lua_setfield(GetCurrentState(), -1, "__index");
 		// Testing
-		lua_pushstring(GetCurrentState(), "obj");
-		lua_pushstring(GetCurrentState(), "0");
+		lua_pushstring(GetCurrentState(), "objName");
+		lua_pushstring(GetCurrentState(), pObjectName.c_str());
 		lua_settable(GetCurrentState(), -3);
 		////////////
 		lua_setglobal(GetCurrentState(), pObjectName.c_str());

@@ -20,6 +20,7 @@ if (MapHolder<ret, args>::CallbackMap.find(name) == MapHolder<ret, args>::Callba
 
 class LuaFunctionsWrapper
 {
+
 private:
 	static unsigned int freeLuaObject;
 
@@ -46,7 +47,7 @@ private:
 		template<typename Ret, typename... Args> struct Function {
 			static Ret CallMemFunc(const std::string &name, Args &&... args) {
 				CALL_RET_ERROR(Ret, Args...)
-					if (Defined::DEBUG)
+					if (LuaWrapperDefined::DEBUG)
 						std::cout << "Called C function [" << name << "]" << std::endl;
 				return MapHolder<Ret, Args...>::CallbackMap[name](std::forward<Args>(args)...);
 			}
@@ -54,7 +55,7 @@ private:
 		template<> struct Function<void, Args...> {
 			static void CallMemFunc(const std::string &name, Args &&... args) {
 				CALL_RET_ERROR(void, Args...)
-					if (Defined::DEBUG)
+					if (LuaWrapperDefined::DEBUG)
 						std::cout << "Called C function [" << name << "]" << std::endl;
 				MapHolder<void, Args...>::CallbackMap[name](std::forward<Args>(args)...);
 			}
@@ -112,7 +113,7 @@ private:
 			std::cout << "Class of C function [" << name << "] is not a Lua member" << std::endl;
 			return;
 		}
-		if (Defined::DEBUG)
+		if (LuaWrapperDefined::DEBUG)
 			std::cout << "Register C function [" << name << "] with [" << params << "] arguments" << std::endl;
 		MapHolder<Ret, Args...>::CallbackMap[name] = std::bind(Callback, pClass, p...);
 	}
@@ -133,6 +134,11 @@ private:
 		}
 	}
 
+	static void RegisterObject(ILuaMember* member) {
+		unsigned int luaObjectIndex = freeLuaObject++;
+		member->SetLuaObject(std::to_string(luaObjectIndex));
+	};
+
 public:
 
 	template<typename Ret, typename Clazz, typename ...Args, typename ...T>
@@ -145,10 +151,6 @@ public:
 		return funcName + std::to_string(luaMember->GetID());
 	}
 
-	static void RegisterObject(ILuaMember* member) {
-		unsigned int luaObjectIndex = freeLuaObject++;
-		member->SetLuaObject(std::to_string(luaObjectIndex));
-	};
 
 	template<typename Ret, typename Clazz, typename ...Args>
 	inline static int FunctionWrapper2(lua_State * L) {
@@ -161,15 +163,15 @@ public:
 		return 0;
 	}
 
-	template<typename Ret, typename Clazz, typename ...Args>
-	static void RegisterCObject(std::string functionName, ILuaMember* member, Ret(Clazz::*Callback)(Args...)) {
+	template<typename Ret, typename Clazz, typename ...Args, typename ...T>
+	static lua_CFunction GetRegisterFunction(std::string name, Clazz* pClass, Ret(Clazz::*Callback)(Args...), T... p) {
+		LuaFunctionsWrapper::RegisterCFunction(name, pClass, Callback, p...);
+		return LuaFunctionsWrapper::FunctionWrapper2<Ret, Clazz, Args...>;
+	};
+
+	static void RegisterCObject(ILuaMember* member, luaL_Reg functions[]) {
 		RegisterObject(member);
-		std::string newName = std::to_string(LuaManager::GetCurrentStateIndex()) + LuaFunctionsWrapper::GenerateFuncName(functionName, member);
-		luaL_Reg functionList[] = {
-			{ functionName.c_str(), LuaFunctionsWrapper::FunctionWrapper2<Ret, Clazz, Args...> },
-			{ NULL, NULL }
-		};
-		LuaManager::RegisterObjectFunctions(member->GetLuaObject(), functionList);
+		LuaManager::RegisterObjectFunctions(member->GetLuaObject(), functions);
 	};
 };
 

@@ -12,4 +12,5 @@ end
 function Update(ptr)
 	print("\nCalled [Update] From [Test1.lua]");
 	ptr:Print("Hello!!");
+	print(ptr.objName);
 end

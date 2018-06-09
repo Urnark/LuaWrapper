@@ -2,7 +2,7 @@
 
 #include "../../Lua/lua.hpp"
 
-#include "../Defined.h"
+#include "../LuaWrapperDefined.h"
 #include "../EntityHandeler/ILuaMember.h"
 
 #include <string>
