@@ -146,6 +146,8 @@ public:
 	static void AddLuaState(const std::string & pLuaStateName);
 
 	static void LoadScript(const std::string & pPath);
+	static void LoadScript(const std::string & pLuaStateName, const std::string & pPath);
+	static void LoadScript(unsigned int pLuaStateIndex, const std::string & pPath);
 
 	static lua_State * GetCurrentState();
 	static unsigned int GetCurrentStateIndex();

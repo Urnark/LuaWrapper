@@ -32,8 +32,8 @@ static int luaPrintC(lua_State* L)
 
 int main()
 {
-	LuaManager* luaManager = new LuaManager();
-	luaManager->InitLuaManager();
+	LuaManager::InitLuaManager();
+	LuaManager::AddLuaState("TestLuaState");
 
 	Test t;
 	LuaFunctionsWrapper::RegisterObject(&t);
@@ -43,26 +43,24 @@ int main()
 	};
 	LuaManager::RegisterObjectFunctions(t.GetLuaObject(), functionList);
 
-	luaManager->LoadScript("Wrapper/TestScripts/Test1.lua");
+	LuaManager::LoadScript("Wrapper/TestScripts/Test1.lua");
+	LuaManager::LoadScript("TestLuaState", "Wrapper/TestScripts/Test2.lua");
 
 	LuaFunctionsWrapper::RegisterCFunction("Testing", &t, &Test::Testing, _1);
 	LuaFunctionsWrapper::RegisterCFunction("Print", &t, &Test::Print, _1);
-
-	// Call lua function
-	luaManager->CallLuaFunc<void>("HelloWorld");
-	luaManager->CallLuaFunc<void>("Update", &t, t.GetLuaObject());
-
-	luaManager->AddLuaState("TestLuaState");
-	luaManager->SetState("TestLuaState");
-
+	LuaManager::SetState("TestLuaState");
 	LuaFunctionsWrapper::RegisterCFunction("Testing", &t, &Test::Testing, _1);
 
-	luaManager->LoadScript("Wrapper/TestScripts/Test2.lua");
-	luaManager->CallLuaFunc<void>("HelloWorld");
+	// Call lua function
+	LuaManager::SetState("Init");
+	LuaManager::CallLuaFunc<void>("HelloWorld");
+	LuaManager::CallLuaFunc<void>("Update", &t, t.GetLuaObject());
+
+	LuaManager::SetState("TestLuaState");
+	LuaManager::CallLuaFunc<void>("HelloWorld");
 
 	std::system("pause");
 
-	luaManager->CloseLuaManager();
-	delete luaManager;
+	LuaManager::CloseLuaManager();
 	return 0;
 }

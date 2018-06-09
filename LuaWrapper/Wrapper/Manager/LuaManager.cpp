@@ -82,6 +82,22 @@ void LuaManager::LoadScript(const std::string & pPath)
 	}
 }
 
+void LuaManager::LoadScript(const std::string & pLuaStateName, const std::string & pPath)
+{
+	unsigned int luaStateIndex = mCurrentState;
+	SetState(pLuaStateName);
+	LoadScript(pPath);
+	SetState(luaStateIndex);
+}
+
+void LuaManager::LoadScript(unsigned int pLuaStateIndex, const std::string & pPath)
+{
+	unsigned int luaStateIndex = mCurrentState;
+	SetState(pLuaStateIndex);
+	LoadScript(pPath);
+	SetState(luaStateIndex);
+}
+
 void LuaManager::CallLuaFunction(const std::string & pFuncName)
 {
 	lua_getglobal(GetCurrentState(), pFuncName.c_str());
