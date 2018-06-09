@@ -46,7 +46,7 @@ int main()
 	luaManager->LoadScript("Wrapper/TestScripts/Test1.lua");
 
 	LuaFunctionsWrapper::RegisterCFunction("Testing", &t, &Test::Testing, _1);
-	LuaFunctionsWrapper::RegisterCFunction(LuaFunctionsWrapper::GenerateFuncName("Print", &t), &t, &Test::Print, _1);
+	LuaFunctionsWrapper::RegisterCFunction("Print", &t, &Test::Print, _1);
 
 	// Call lua function
 	luaManager->CallLuaFunc<void>("HelloWorld");
