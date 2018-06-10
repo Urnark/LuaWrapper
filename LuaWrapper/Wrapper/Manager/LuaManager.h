@@ -16,11 +16,38 @@
 class LuaManager
 {
 private:
-	inline static void _push(lua_State * pL, ILuaMember* arg) {
+	template<int index, typename... Ts>
+	struct iterate_tuple {
+		void operator() (std::tuple<Ts...>& t) {
+			Push(std::get<index>(t));
+			iterate_tuple<index - 1, Ts...>{}(t);
+		}
+	};
+
+	template<typename... Ts>
+	struct iterate_tuple<0, Ts...> {
+		void operator() (std::tuple<Ts...>& t) {
+			Push(std::get<0>(t));
+		}
+	};
+
+	template<typename... Ts>
+	static void PushFromTuple(std::tuple<Ts...>& t) {
+		iterate_tuple<std::tuple_size<std::tuple<Ts...>>::value - 1, Ts...> it;
+		it(t);
+	};
+
+private:
+	inline static void _push(lua_State * pL, ILuaMember* luaMember) {
 		ILuaMember** ptr = reinterpret_cast<ILuaMember**>(lua_newuserdata(LuaManager::GetCurrentState(), sizeof(ILuaMember*)));
-		*ptr = arg;
-		luaL_getmetatable(LuaManager::GetCurrentState(), LuaManager::GetMetaTable(arg->GetLuaObject()).c_str());
+		*ptr = luaMember;
+		luaL_getmetatable(LuaManager::GetCurrentState(), LuaManager::GetMetaTable(luaMember->GetLuaObject()).c_str());
 		lua_setmetatable(LuaManager::GetCurrentState(), -2);
+	}
+
+	template<typename ...Args>
+	inline static void _push(lua_State * pL, RetValues<Args...>&& luaMember) {
+		PushFromTuple(luaMember.info);
 	}
 	inline static void _push(lua_State * pL, int arg) {
 		LuaManager::PushInteger(pL, arg);
@@ -63,6 +90,10 @@ public:
 	static void Push(lua_State * L, Arg&& arg) {
 		//return _push<Arg>(L, std::forward<Arg>(arg));
 		return _push(L, std::forward<Arg>(arg));
+	}
+	template <typename Arg>
+	static void Push(Arg&& arg) {
+		return _push(LuaManager::GetCurrentState(), std::forward<Arg>(arg));
 	}
 	
 	template <typename... Args>
@@ -177,6 +208,7 @@ public:
 	static std::string GetMetaTableAndCheck(const std::string & pObjectName);
 
 	static void PrintStackSize();
+	static int StackSize();
 	static const char* GetType();
 	static const char* GetType(int index);
 

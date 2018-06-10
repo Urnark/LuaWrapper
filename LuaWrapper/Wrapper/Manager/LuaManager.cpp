@@ -237,7 +237,6 @@ bool LuaManager::GetBool(lua_State *& pL)
 	return boolean;
 }
 
-/////////////////////////////////////////////////////////
 int LuaManager::GetInteger(int params)
 {
 	int index = 0 - params;
@@ -300,7 +299,7 @@ void LuaManager::RegisterObjectFunctions(const std::string & pObjectName, luaL_R
 		lua_pushvalue(GetCurrentState(), -1);
 		lua_setfield(GetCurrentState(), -1, "__index");
 		// Testing
-		lua_pushstring(GetCurrentState(), "objName");
+		lua_pushstring(GetCurrentState(), "id");
 		lua_pushstring(GetCurrentState(), pObjectName.c_str());
 		lua_settable(GetCurrentState(), -3);
 		////////////
@@ -310,7 +309,12 @@ void LuaManager::RegisterObjectFunctions(const std::string & pObjectName, luaL_R
 
 void LuaManager::PrintStackSize()
 {
-	std::cout << "Size of Lua stack: " << lua_gettop(GetCurrentState()) << std::endl;
+	std::cout << "Size of Lua stack: " << StackSize() << std::endl;
+}
+
+int LuaManager::StackSize()
+{
+	return lua_gettop(GetCurrentState());
 }
 
 const char * LuaManager::GetType()
