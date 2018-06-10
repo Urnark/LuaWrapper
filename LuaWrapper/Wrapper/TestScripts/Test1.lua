@@ -1,8 +1,10 @@
 -- Test1.lua --
 
 function HelloWorld()
-	print("\nHello World! From [Test1.lua]");
-	Testing(10);
+	print("\nHello World! From [Test1.lua]")
+	Testing(10)
+	Testing4(2, 3)
+	Testing3()
 end
 
 --function Update(ptr, luaObject)
@@ -10,7 +12,7 @@ end
 --end
 
 function Update(ptr)
-	print("\nCalled [Update] From [Test1.lua]");
-	ptr:Print("Hello!!");
-	print(ptr.objName);
+	print("\nCalled [Update] From [Test1.lua]")
+	ptr:Print("Hello!!")
+	print(ptr.objName)
 end

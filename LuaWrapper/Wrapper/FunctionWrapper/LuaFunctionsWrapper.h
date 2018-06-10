@@ -18,6 +18,17 @@ if (MapHolder<ret, args>::CallbackMap.find(name) == MapHolder<ret, args>::Callba
 
 #define CALL_RET_ERROR(ret, args) ILuaMember_CALL_ERROR(ret, args, ret())
 
+template<int N>
+struct my_placeholder { static my_placeholder ph; };
+
+template<int N>
+my_placeholder<N> my_placeholder<N>::ph;
+
+namespace std {
+	template<int N>
+	struct is_placeholder<::my_placeholder<N>> : std::integral_constant<int, N> { };
+}
+
 class LuaFunctionsWrapper
 {
 
@@ -103,8 +114,8 @@ private:
 	}
 
 	/*----------------------- Register functions -----------------------------*/
-	template<typename Ret, typename Clazz, typename ...Args, typename ...T>
-	static void RegisterCaller(std::string name, Clazz*& pClass, Ret(Clazz::*Callback)(Args...), T... p) {
+	template<typename Ret, typename Clazz, typename ...Args, int... Is>
+	static void RegisterCaller(std::string name, Clazz*& pClass, Ret(Clazz::*Callback)(Args...), std::integer_sequence<int, Is...>) {
 		const int params = sizeof...(Args);
 		ILuaMember* luaMember = dynamic_cast<ILuaMember*>(pClass);
 		name = std::to_string(LuaManager::GetCurrentStateIndex()) + LuaFunctionsWrapper::GenerateFuncName(name, pClass);
@@ -115,7 +126,7 @@ private:
 		}
 		if (LuaWrapperDefined::DEBUG)
 			std::cout << "Register C function [" << name << "] with [" << params << "] arguments" << std::endl;
-		MapHolder<Ret, Args...>::CallbackMap[name] = std::bind(Callback, pClass, p...);
+		MapHolder<Ret, Args...>::CallbackMap[name] = std::bind(Callback, pClass, my_placeholder<Is + 1>::ph...);
 	}
 
 	template<typename Ret, typename Clazz, typename ...Args>
@@ -140,9 +151,9 @@ private:
 
 public:
 
-	template<typename Ret, typename Clazz, typename ...Args, typename ...T>
-	static void RegisterCFunction(std::string name, Clazz* pClass, Ret(Clazz::*Callback)(Args...), T... p) {
-		LuaFunctionsWrapper::RegisterCaller(name, pClass, Callback, p...);
+	template<typename Ret, typename Clazz, typename ...Args>
+	static void RegisterCFunction(std::string name, Clazz* pClass, Ret(Clazz::*Callback)(Args...)) {
+		LuaFunctionsWrapper::RegisterCaller(name, pClass, Callback, std::make_integer_sequence<int, sizeof...(Args)>());
 		LuaFunctionsWrapper::AddCFunction<Ret, Clazz, Args...>(pClass, name);
 	}
 
@@ -162,9 +173,9 @@ public:
 		return 0;
 	}
 
-	template<typename Ret, typename Clazz, typename ...Args, typename ...T>
-	static lua_CFunction GetRegisterFunction(std::string name, Clazz* pClass, Ret(Clazz::*Callback)(Args...), T... p) {
-		LuaFunctionsWrapper::RegisterCFunction(name, pClass, Callback, p...);
+	template<typename Ret, typename Clazz, typename ...Args>
+	static lua_CFunction GetRegisterFunction(std::string name, Clazz* pClass, Ret(Clazz::*Callback)(Args...)) {
+		LuaFunctionsWrapper::RegisterCFunction(name, pClass, Callback);
 		return LuaFunctionsWrapper::FunctionWrapper2<Ret, Clazz, Args...>;
 	};
 
