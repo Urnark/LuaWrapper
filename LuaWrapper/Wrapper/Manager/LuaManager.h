@@ -61,6 +61,9 @@ private:
 	inline static void _push(lua_State * pL, float arg) {
 		LuaManager::PushFloat(pL, arg);
 	}
+	inline static void _push(lua_State * pL, double arg) {
+		LuaManager::PushFloat(pL, arg);
+	}
 
 	template <typename Ret>
 	inline static Ret _get(lua_State * pL) {

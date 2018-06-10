@@ -3,11 +3,11 @@
 
 #include <iostream>
 
-class Point : public RetValues<float, int, float>
+class Point : public RetValues<float, int, int>
 {
 public:
 	Point() : RetValues(0.0f, 0, 0.0f) {};
-	Point(float x, int y, float z) : RetValues(z, y, x) { this->x = x; this->y = y; this->z = z; };
+	Point(int x, int y, float z) : RetValues(z, y, x) { this->x = x; this->y = y; this->z = z; };
 	float x;
 	int y;
 	float z;

@@ -27,7 +27,7 @@ template<typename ...Args>
 class RetValues : public ILuaMember
 {
 public:
-	RetValues(Args... args) { 
+	RetValues(Args... args) {
 		info = std::make_tuple(args...);
 	};
 	std::tuple<Args...> info;
