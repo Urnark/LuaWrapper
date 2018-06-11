@@ -25,9 +25,14 @@ class RetValues : public ILuaMember
 {
 public:
 	RetValues() {};
-	RetValues(Args... args) {
-		info = std::make_tuple(args...);
+	RetValues(Args&... args) {
+		info = std::forward_as_tuple(std::forward<Args>(args)...);
+		//info = std::make_tuple(args...);
 	};
 	~RetValues() {};
+
+	void SetRetValues(Args&&... args) {
+		info = std::forward_as_tuple(std::forward<Args>(args)...);
+	}
 	std::tuple<Args...> info;
 };
