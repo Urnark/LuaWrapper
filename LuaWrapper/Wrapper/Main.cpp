@@ -3,27 +3,6 @@
 
 #include <iostream>
 
-class Point : public RetValues<int, int, float>
-{
-public:
-	int x;
-	int y;
-	float z;
-	Point() : RetValues(this->x, this->y, this->z) {
-		std::cout << "2hello!!!!!!!" << std::endl;
-		//SetRetValues(this->x, this->y, this->z); 
-	};
-	//Point(int x, int y, float z) : RetValues(this->x, this->y, this->z) { this->x = x; this->y = y; this->z = z; };
-	Point(int x, int y, float z) : RetValues(x, y, z) {
-		this->x = x; 
-		this->y = y; 
-		this->z = z;
-		std::cout << "hello!!!!!!!" << std::endl;
-		//SetRetValues(std::forward<int>(this->x), std::forward<int>(this->y), std::forward<float>(this->z));
-	};
-	
-};
-
 class Test : public ILuaMember
 {
 public:
@@ -47,20 +26,10 @@ public:
 		std::cout << "Testing4: " << x << ", " << y << std::endl;
 	};
 
-	Point GetPoint(int x, int y) {
+	LFW__ReturnType GetPoint(int x, int y) {
 		std::cout << "GetPoint: " << x << ", " << y << ", " << 4 << std::endl;
-		p.x = x;
-		p.y = y;
-		std::cout << "P; x: " << x << std::endl;
-		std::cout << "P; get<0>: " << std::get<0>(p.info) << std::endl;
-		
-		return Point(x, y, 4);
+		return LuaFunctionsWrapper::RetV(x, y, 4.0f);
 	};
-
-	/*RetValues<std::string, int> GetPoint2(int i) {
-		std::cout << "GetPoint2: " << i++ << std::endl;
-		return RetValues<std::string, int>("GetPoint2", i);
-	};*/
 
 	void ConstFunc() const {
 		std::cout << "constFunc: None" << std::endl;
@@ -69,8 +38,6 @@ public:
 	static void SFunc() {
 		std::cout << "SFunc2: None" << std::endl;
 	};
-
-	Point p;// = Point(0, 7, 0.0f);
 };
 
 static void SFunc() {
@@ -93,7 +60,6 @@ int main()
 		luaL_Reg mFuncList[] = {
 			LFW_function("Print", t, Test::Print),
 			LFW_function("GetPoint", t, Test::GetPoint),
-			//LFW_function("GetPoint2", t, Test::GetPoint2),
 			{ NULL, NULL }
 		};
 		LuaFunctionsWrapper::RegisterCObject(&t, mFuncList);
@@ -116,7 +82,7 @@ int main()
 	// Call lua function
 	LuaManager::SetState("Init");
 	LuaManager::CallLuaFunc<void>("HelloWorld");
-	ts[0].p.z = 100.0f;
+
 	LuaManager::CallLuaFunc<void>("Update", &ts[0]);
 	LuaManager::CallLuaFunc<void>("Update", &ts[1]);
 

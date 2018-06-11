@@ -33,6 +33,7 @@ if (ptr == nullptr) {\
 #define CALL_RET_ERROR(ret, args) ILuaMember_CALL_ERROR(ret, args, ret())
 
 #define LFW_function(name, entity, function) { ##name, LuaFunctionsWrapper::GetRegisterFunction(##name, &##entity, &##function) }
+#define LFW__ReturnType auto
 
 template<int N>
 struct my_placeholder { static my_placeholder ph; };
@@ -250,6 +251,12 @@ public:
 	static Ret CallMemFunc(const std::string &name, Args &&... args) {
 		return CallAndRet<Ret, Args...>::Function<Ret, Args...>::CallMemFunc(name, std::forward<Args>(args)...);
 	}
+
+	/* --------------- Create a instance of RetValues with a specific parameter ---------------- */
+	template<typename ...Args>
+	inline static RetValues<Args...> RetV(Args... args) {
+		return RetValues<Args...>(args...);
+	};
 };
 
 template <typename Ret, typename... Args>
