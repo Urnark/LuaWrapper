@@ -28,5 +28,6 @@ public:
 	RetValues(Args... args) {
 		info = std::make_tuple(args...);
 	};
+	~RetValues() {};
 	std::tuple<Args...> info;
 };

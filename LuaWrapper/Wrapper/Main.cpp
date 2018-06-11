@@ -73,9 +73,10 @@ int main()
 	for (Test& t : ts)
 	{
 		luaL_Reg mFuncList[] = {
-			{ "Print", LuaFunctionsWrapper::GetRegisterFunction("Print", &t, &Test::Print) },
-			{ "GetPoint", LuaFunctionsWrapper::GetRegisterFunction("GetPoint", &t, &Test::GetPoint) },
-		{ NULL, NULL }
+			LFW_function("Print", t, Test::Print),
+			LFW_function("GetPoint", t, Test::GetPoint),
+			LFW_function("GetPoint2", t, Test::GetPoint2),
+			{ NULL, NULL }
 		};
 		LuaFunctionsWrapper::RegisterCObject(&t, mFuncList);
 	}
@@ -84,12 +85,12 @@ int main()
 	LuaManager::LoadScript("TestLuaState", "Wrapper/TestScripts/Test2.lua");
 
 	LuaFunctionsWrapper::RegisterCFunction("Testing3", &ts[0], &Test::Testing3);
-	LuaFunctionsWrapper::RegisterCFunction("GetPoint2", &ts[0], &Test::GetPoint2);
 	LuaFunctionsWrapper::RegisterCFunction("ConstFunc", &ts[0], &Test::ConstFunc);
 	LuaFunctionsWrapper::RegisterCFunction("SFunc", &SFunc);
 	LuaFunctionsWrapper::RegisterCFunction("SFunc2", &Test::SFunc);
 	
 	LuaFunctionsWrapper::RegisterCFunction("Testing", &ts[0], &Test::Testing);
+
 	LuaManager::SetState("TestLuaState");
 	LuaFunctionsWrapper::RegisterCFunction("Testing", &ts[0], &Test::Testing);
 	LuaFunctionsWrapper::RegisterCFunction("Testing2", &ts[0], &Test::Testing2);

@@ -32,6 +32,8 @@ if (ptr == nullptr) {\
 
 #define CALL_RET_ERROR(ret, args) ILuaMember_CALL_ERROR(ret, args, ret())
 
+#define LFW_function(name, entity, function) { ##name, LuaFunctionsWrapper::GetRegisterFunction(##name, &##entity, &##function) }
+
 template<int N>
 struct my_placeholder { static my_placeholder ph; };
 
@@ -106,30 +108,11 @@ private:
 		CallFunc<Ret, Args...>::Function<Ret, Args...>::CallAndPush(name);
 	}
 
-	/* --------------- Lua C function for calling a member function ---------------- */
+	/* --------------- Lua C function for calling a function ---------------- */
 	template<typename Ret, typename ...Args>
 	inline static int FunctionWrapper(lua_State * L) {
-		//Clazz* luaMember = reinterpret_cast<Clazz*>(lua_touserdata(LuaManager::GetCurrentState(), lua_upvalueindex(1)));
 		std::string function = lua_tostring(LuaManager::GetCurrentState(), lua_upvalueindex(1));
 		
-		int stackSize = LuaManager::StackSize() - sizeof...(Args);
-		CallAndPush<Ret, Args...>(function);
-		if (!eq<void, Ret>::result)
-		{
-			if (std::is_base_of<ILuaMember, Ret>::value) {
-				return LuaManager::StackSize() - stackSize;
-			}
-			else
-				return 1;
-		}
-		return 0;
-	}
-
-	/* --------------- Lua C function for calling a static function ---------------- */
-	template<typename Ret, typename ...Args>
-	inline static int FunctionWrapperStatic(lua_State * L) {
-		std::string function = lua_tostring(LuaManager::GetCurrentState(), lua_upvalueindex(1));
-
 		int stackSize = LuaManager::StackSize() - sizeof...(Args);
 		CallAndPush<Ret, Args...>(function);
 		if (!eq<void, Ret>::result)
@@ -149,9 +132,16 @@ private:
 		Clazz* luaMember = LuaManager::GetUserData<Clazz>(-lua_gettop(LuaManager::GetCurrentState()));
 		std::string functionName = LuaFunctionsWrapper::GenerateFuncName(LuaManager::GetFunctionNameFromLua(), luaMember);
 
+		int stackSize = LuaManager::StackSize() - sizeof...(Args);
 		CallAndPush<Ret, Args...>(functionName);
 		if (!eq<void, Ret>::result)
-			return 1;
+		{
+			if (std::is_base_of<ILuaMember, Ret>::value) {
+				return LuaManager::StackSize() - stackSize;
+			}
+			else
+				return 1;
+		}
 		return 0;
 	}
 

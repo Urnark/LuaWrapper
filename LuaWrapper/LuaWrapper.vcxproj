@@ -219,6 +219,7 @@
     <ClInclude Include="Wrapper\Manager\LuaManager.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Wrapper\TestScripts\LibTest.lua" />
     <None Include="Wrapper\TestScripts\Test1.lua" />
     <None Include="Wrapper\TestScripts\Test2.lua" />
   </ItemGroup>
