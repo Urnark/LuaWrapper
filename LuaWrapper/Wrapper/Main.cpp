@@ -42,7 +42,7 @@ public:
 	};
 
 	RetValues<std::string, int> GetPoint2(int i) {
-		std::cout << "GetPoint2: " << i << std::endl;
+		std::cout << "GetPoint2: " << i++ << std::endl;
 		return RetValues<std::string, int>("GetPoint2", i);
 	};
 
@@ -74,6 +74,7 @@ int main()
 	{
 		luaL_Reg mFuncList[] = {
 			{ "Print", LuaFunctionsWrapper::GetRegisterFunction("Print", &t, &Test::Print) },
+			{ "GetPoint", LuaFunctionsWrapper::GetRegisterFunction("GetPoint", &t, &Test::GetPoint) },
 		{ NULL, NULL }
 		};
 		LuaFunctionsWrapper::RegisterCObject(&t, mFuncList);
@@ -83,7 +84,6 @@ int main()
 	LuaManager::LoadScript("TestLuaState", "Wrapper/TestScripts/Test2.lua");
 
 	LuaFunctionsWrapper::RegisterCFunction("Testing3", &ts[0], &Test::Testing3);
-	LuaFunctionsWrapper::RegisterCFunction("GetPoint", &ts[0], &Test::GetPoint);
 	LuaFunctionsWrapper::RegisterCFunction("GetPoint2", &ts[0], &Test::GetPoint2);
 	LuaFunctionsWrapper::RegisterCFunction("ConstFunc", &ts[0], &Test::ConstFunc);
 	LuaFunctionsWrapper::RegisterCFunction("SFunc", &SFunc);
