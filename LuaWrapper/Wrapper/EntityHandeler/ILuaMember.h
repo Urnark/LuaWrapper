@@ -11,7 +11,6 @@ class ILuaMember
 private:
 	static unsigned int freeID;
 	unsigned int id;
-	std::string luaObject;
 
 public:
 
@@ -19,14 +18,13 @@ public:
 	~ILuaMember() {};
 
 	inline unsigned int GetID() const { return id; };
-	inline std::string GetLuaObject() const { return luaObject; };
-	inline void SetLuaObject(const std::string & luaObject) { this->luaObject = luaObject; };
 };
 
 template<typename ...Args>
 class RetValues : public ILuaMember
 {
 public:
+	RetValues() {};
 	RetValues(Args... args) {
 		info = std::make_tuple(args...);
 	};

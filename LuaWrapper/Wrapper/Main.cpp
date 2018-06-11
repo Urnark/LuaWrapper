@@ -35,18 +35,36 @@ public:
 	void Testing4(int x, int y) {
 		std::cout << "Testing4: " << x << ", " << y << std::endl;
 	};
+
 	Point GetPoint(int x, int y) {
 		std::cout << "GetPoint: " << x << ", " << y << ", " << 4 << std::endl;
 		return Point(x, y, 4);
 	};
+
+	RetValues<std::string, int> GetPoint2(int i) {
+		std::cout << "GetPoint2: " << i << std::endl;
+		return RetValues<std::string, int>("GetPoint2", i);
+	};
+
+	void ConstFunc() const {
+		std::cout << "constFunc: None" << std::endl;
+	};
+
+	static void SFunc() {
+		std::cout << "SFunc2: None" << std::endl;
+	};
 };
 
-// TODO: Be able to call static functions and const functions, remove luaObject and use ID, clean code
+static void SFunc() {
+	std::cout << "SFunc: None" << std::endl;
+};
+
+// TODO: clean code
 
 int main()
 {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-	//_CrtSetBreakAlloc(189);
+	//_CrtSetBreakAlloc(1062);
 
 	LuaManager::InitLuaManager();
 	LuaManager::AddLuaState("TestLuaState");
@@ -66,7 +84,11 @@ int main()
 
 	LuaFunctionsWrapper::RegisterCFunction("Testing3", &ts[0], &Test::Testing3);
 	LuaFunctionsWrapper::RegisterCFunction("GetPoint", &ts[0], &Test::GetPoint);
-
+	LuaFunctionsWrapper::RegisterCFunction("GetPoint2", &ts[0], &Test::GetPoint2);
+	LuaFunctionsWrapper::RegisterCFunction("ConstFunc", &ts[0], &Test::ConstFunc);
+	LuaFunctionsWrapper::RegisterCFunction("SFunc", &SFunc);
+	LuaFunctionsWrapper::RegisterCFunction("SFunc2", &Test::SFunc);
+	
 	LuaFunctionsWrapper::RegisterCFunction("Testing", &ts[0], &Test::Testing);
 	LuaManager::SetState("TestLuaState");
 	LuaFunctionsWrapper::RegisterCFunction("Testing", &ts[0], &Test::Testing);

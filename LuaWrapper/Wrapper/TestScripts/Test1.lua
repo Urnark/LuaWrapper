@@ -5,7 +5,13 @@ function HelloWorld()
 	Testing(10)
 	x, y, z = GetPoint(2, 3)
 	print("x: " .. x .. ", y: " .. y .. ", z: " .. z)
+	x2, y2 = GetPoint2(2)
+	print("x2: " .. x2 .. ", y2: " .. y2)
 	Testing3()
+
+	ConstFunc();
+	SFunc();
+	SFunc2();
 end
 
 function Update(ptr)

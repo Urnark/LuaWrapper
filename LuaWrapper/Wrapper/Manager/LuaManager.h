@@ -44,7 +44,7 @@ private:
 	inline static void _push(lua_State * pL, ILuaMember* luaMember) {
 		ILuaMember** ptr = reinterpret_cast<ILuaMember**>(lua_newuserdata(LuaManager::GetCurrentState(), sizeof(ILuaMember*)));
 		*ptr = luaMember;
-		luaL_getmetatable(LuaManager::GetCurrentState(), LuaManager::GetMetaTable(luaMember->GetLuaObject()).c_str());
+		luaL_getmetatable(LuaManager::GetCurrentState(), LuaManager::GetMetaTable(std::to_string(luaMember->GetID())).c_str());
 		lua_setmetatable(LuaManager::GetCurrentState(), -2);
 	}
 
