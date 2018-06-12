@@ -1,11 +1,8 @@
-
-#define LUA_WRAPPER_DEBUG false
-
 #include "FunctionWrapper\LuaFunctionsWrapper.h"
 
 #include <iostream>
 
-struct Point : ReturnToLua<int, int, float>
+struct Point : LFW::ReturnToLua<int, int, float>
 {
 	int x;
 	int y;
@@ -16,7 +13,7 @@ struct Point : ReturnToLua<int, int, float>
 	};
 };
 
-class Test : public ILuaMember
+class Test : public LFW::ILuaMember
 {
 public:
 	void Testing(int t) {
@@ -72,8 +69,9 @@ int main()
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	//_CrtSetBreakAlloc(1062);
 
-	LuaManager::InitLuaManager();
-	LuaManager::AddLuaState("TestLuaState");
+	LFW::LuaManager::DEBUG_FLAGS = LFW::ERRORS | LFW::DEBUG_PRINTS | LFW::FUNCTION_CALLS | LFW::REGISTER_FUNCTIONS;
+	LFW::LuaManager::InitLuaManager();
+	LFW::LuaManager::AddLuaState("TestLuaState");
 
 	std::vector<Test> ts = { Test(), Test() };
 	for (Test& t : ts)
@@ -84,36 +82,37 @@ int main()
 			LFW_function("GetPoint2", t, Test::GetPoint2),
 			{ NULL, NULL }
 		};
-		LuaFunctionsWrapper::RegisterCObject(&t, mFuncList);
+
+		LFW::LuaFunctionsWrapper::RegisterCObject(&t, mFuncList);
 	}
 
-	LuaManager::LoadScript("Wrapper/TestScripts/Test1.lua");
-	LuaManager::LoadScript("TestLuaState", "Wrapper/TestScripts/Test2.lua");
+	LFW::LuaManager::LoadScript("Wrapper/TestScripts/Test1.lua");
+	LFW::LuaManager::LoadScript("TestLuaState", "Wrapper/TestScripts/Test2.lua");
 
-	LuaFunctionsWrapper::RegisterCFunction("Testing3", &ts[0], &Test::Testing3);
-	LuaFunctionsWrapper::RegisterCFunction("ConstFunc", &ts[0], &Test::ConstFunc);
-	LuaFunctionsWrapper::RegisterCFunction("SFunc", &SFunc);
-	LuaFunctionsWrapper::RegisterCFunction("SFunc2", &Test::SFunc);
+	LFW::LuaFunctionsWrapper::RegisterCFunction("Testing3", &ts[0], &Test::Testing3);
+	LFW::LuaFunctionsWrapper::RegisterCFunction("ConstFunc", &ts[0], &Test::ConstFunc);
+	LFW::LuaFunctionsWrapper::RegisterCFunction("SFunc", &SFunc);
+	LFW::LuaFunctionsWrapper::RegisterCFunction("SFunc2", &Test::SFunc);
 	
-	LuaFunctionsWrapper::RegisterCFunction("Testing", &ts[0], &Test::Testing);
+	LFW::LuaFunctionsWrapper::RegisterCFunction("Testing", &ts[0], &Test::Testing);
 
-	LuaManager::SetState("TestLuaState");
-	LuaFunctionsWrapper::RegisterCFunction("Testing", &ts[0], &Test::Testing);
-	LuaFunctionsWrapper::RegisterCFunction("Testing2", &ts[0], &Test::Testing2);
-	
+	LFW::LuaManager::SetState("TestLuaState");
+	LFW::LuaFunctionsWrapper::RegisterCFunction("Testing", &ts[0], &Test::Testing);
+	LFW::LuaFunctionsWrapper::RegisterCFunction("Testing2", &ts[0], &Test::Testing2);
+
 	// Call lua function
-	LuaManager::SetState("Init");
-	LuaManager::CallLuaFunc<void>("HelloWorld");
+	LFW::LuaManager::SetState("Init");
+	LFW::LuaManager::CallLuaFunc<void>("HelloWorld");
 	
 	ts[0].p.z = 100.0f;
-	LuaManager::CallLuaFunc<void>("Update", &ts[0]);
-	LuaManager::CallLuaFunc<void>("Update", &ts[1]);
+	LFW::LuaManager::CallLuaFunc<void>("Update", &ts[0]);
+	LFW::LuaManager::CallLuaFunc<void>("Update", &ts[1]);
 
-	LuaManager::SetState("TestLuaState");
-	LuaManager::CallLuaFunc<void>("HelloWorld");
+	LFW::LuaManager::SetState("TestLuaState");
+	LFW::LuaManager::CallLuaFunc<void>("HelloWorld");
 
 	std::system("pause");
 
-	LuaManager::CloseLuaManager();
+	LFW::LuaManager::CloseLuaManager();
 	return 0;
 }

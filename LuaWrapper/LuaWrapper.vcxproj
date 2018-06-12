@@ -181,7 +181,6 @@
     <ClCompile Include="Lua\lvm.c" />
     <ClCompile Include="Lua\lzio.c" />
     <ClCompile Include="Wrapper\EntityHandeler\ILuaMember.cpp" />
-    <ClCompile Include="Wrapper\FunctionWrapper\LuaFunctionsWrapper.cpp" />
     <ClCompile Include="Wrapper\Manager\LuaManager.cpp" />
     <ClCompile Include="Wrapper\Main.cpp" />
   </ItemGroup>

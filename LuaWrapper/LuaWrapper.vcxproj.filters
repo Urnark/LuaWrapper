@@ -117,9 +117,6 @@
     <ClCompile Include="Wrapper\Manager\LuaManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Wrapper\FunctionWrapper\LuaFunctionsWrapper.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Wrapper\EntityHandeler\ILuaMember.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
