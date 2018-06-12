@@ -2,7 +2,6 @@
 
 #include "../../Lua/lua.hpp"
 
-#include "../LuaWrapperDefined.h"
 #include "../EntityHandeler/ILuaMember.h"
 
 #include <string>
@@ -49,8 +48,14 @@ private:
 	}
 
 	template<typename ...Args>
-	inline static void _push(lua_State * pL, RetValues<Args...>&& luaMember) {
-		PushFromTuple(luaMember.info);
+	inline static void _push(lua_State * pL, RetValuesToLua<Args...>&& returnValues) {
+		PushFromTuple(returnValues.returnValues);
+	}
+
+	template<typename ...Args>
+	inline static void _push(lua_State * pL, ReturnToLua<Args...>&& returnValues) {
+		returnValues.SetReturnVariables();
+		PushFromTuple(returnValues.returnValues);
 	}
 
 	inline static void _push(lua_State * pL, int arg) {

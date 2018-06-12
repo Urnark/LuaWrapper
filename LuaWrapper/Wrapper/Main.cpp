@@ -1,7 +1,20 @@
 
+#define LUA_WRAPPER_DEBUG
+
 #include "FunctionWrapper\LuaFunctionsWrapper.h"
 
 #include <iostream>
+
+struct Point : ReturnToLua<int, int, float>
+{
+	int x;
+	int y;
+	float z;
+	// Need to set which variables that shall be returned
+	void SetReturnVariables() {
+		LFW_SetReturnValues(x, y, z);
+	};
+};
 
 class Test : public ILuaMember
 {
@@ -26,9 +39,15 @@ public:
 		std::cout << "Testing4: " << x << ", " << y << std::endl;
 	};
 
-	LFW__ReturnType GetPoint(int x, int y) {
+	LFW_ReturnType GetPoint(int x, int y) {
 		std::cout << "GetPoint: " << x << ", " << y << ", " << 4 << std::endl;
-		return LuaFunctionsWrapper::RetV(x, y, 4.0f);
+		return LFW_ReturnValues(x, y, 4.0f);
+	};
+	Point GetPoint2(int x, int y) {
+		std::cout << "GetPoint: " << x << ", " << y << ", " << 4 << std::endl;
+		p.x = x;
+		p.y = y;
+		return p;
 	};
 
 	void ConstFunc() const {
@@ -38,13 +57,15 @@ public:
 	static void SFunc() {
 		std::cout << "SFunc2: None" << std::endl;
 	};
+
+	Point p;
 };
 
 static void SFunc() {
 	std::cout << "SFunc: None" << std::endl;
 };
 
-// TODO: Fix return values for RetValues, clean code
+// TODO: clean code
 
 int main()
 {
@@ -60,6 +81,7 @@ int main()
 		luaL_Reg mFuncList[] = {
 			LFW_function("Print", t, Test::Print),
 			LFW_function("GetPoint", t, Test::GetPoint),
+			LFW_function("GetPoint2", t, Test::GetPoint2),
 			{ NULL, NULL }
 		};
 		LuaFunctionsWrapper::RegisterCObject(&t, mFuncList);
@@ -82,7 +104,8 @@ int main()
 	// Call lua function
 	LuaManager::SetState("Init");
 	LuaManager::CallLuaFunc<void>("HelloWorld");
-
+	
+	ts[0].p.z = 100.0f;
 	LuaManager::CallLuaFunc<void>("Update", &ts[0]);
 	LuaManager::CallLuaFunc<void>("Update", &ts[1]);
 

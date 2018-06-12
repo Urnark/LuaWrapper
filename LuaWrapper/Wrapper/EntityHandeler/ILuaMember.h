@@ -4,8 +4,6 @@
 #include <vector>
 #include <tuple>
 
-#include "../LuaWrapperDefined.h" // Only for DEBUG
-
 class ILuaMember
 {
 private:
@@ -20,15 +18,22 @@ public:
 	inline unsigned int GetID() const { return id; };
 };
 
-template<typename ...Args>
-class RetValues : public ILuaMember
-{
-public:
-	RetValues() {};
-	RetValues(Args... args) {
-		info = std::make_tuple(args...);
-	};
-	~RetValues() {};
+class Base_of_ReturnToLua {};
 
-	std::tuple<Args...> info;
+template<typename ...Args>
+struct RetValuesToLua : Base_of_ReturnToLua
+{
+	RetValuesToLua() {};
+	RetValuesToLua(Args... args) {
+		returnValues = std::make_tuple(args...);
+	};
+
+	std::tuple<Args...> returnValues;
+};
+
+template<typename ...Args>
+struct ReturnToLua : Base_of_ReturnToLua
+{
+	std::tuple<Args...> returnValues;
+	virtual void SetReturnVariables() = 0;
 };

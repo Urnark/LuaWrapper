@@ -10,16 +10,14 @@
 #define ILuaMember_CALL_ERROR(ret, args, retV)\
 if (MapHolder<ret, args>::Functions.find(name) == MapHolder<ret, args>::Functions.end())\
 {\
-	if (LuaWrapperDefined::DEBUG)\
-		std::cout << "ERROR: C Function [" << name << "] is not a registered function" << std::endl;\
+	std::cout << "ERROR: C Function [" << name << "] is not a registered function" << std::endl;\
 	return retV;\
 }\
 
 #define ILuaMember_CALL_EXISTS(ret, args)\
 if (MapHolder<ret, args>::Functions.find(name) != MapHolder<ret, args>::Functions.end())\
 {\
-	if (LuaWrapperDefined::DEBUG)\
-		std::cout << "ERROR: C Function [" << name << "] is allready a registered function" << std::endl;\
+	std::cout << "ERROR: C Function [" << name << "] is allready a registered function" << std::endl;\
 	return false;\
 }\
 
@@ -33,7 +31,9 @@ if (ptr == nullptr) {\
 #define CALL_RET_ERROR(ret, args) ILuaMember_CALL_ERROR(ret, args, ret())
 
 #define LFW_function(name, entity, function) { ##name, LuaFunctionsWrapper::GetRegisterFunction(##name, &##entity, &##function) }
-#define LFW__ReturnType auto
+#define LFW_ReturnValues(...) LuaFunctionsWrapper::ReturnValuesToLua(__VA_ARGS__)
+#define LFW_ReturnType auto
+#define LFW_SetReturnValues(...) returnValues = std::make_tuple(__VA_ARGS__)
 
 template<int N>
 struct my_placeholder { static my_placeholder ph; };
@@ -71,17 +71,19 @@ private:
 	struct CallAndRet {
 		template<typename Ret, typename... Args> struct Function {
 			static Ret CallMemFunc(const std::string &name, Args &&... args) {
+#ifdef LUA_WRAPPER_DEBUG
 				CALL_RET_ERROR(Ret, Args...)
-				if (LuaWrapperDefined::DEBUG)
-					std::cout << "Called C function [" << name << "]" << std::endl;
+				std::cout << "Called C function [" << name << "]" << std::endl;
+#endif
 				return MapHolder<Ret, Args...>::Functions[name](std::forward<Args>(args)...);
 			}
 		};
 		template<> struct Function<void, Args...> {
 			static void CallMemFunc(const std::string &name, Args &&... args) {
+#ifdef LUA_WRAPPER_DEBUG
 				CALL_RET_ERROR(void, Args...)
-				if (LuaWrapperDefined::DEBUG)
 					std::cout << "Called C function [" << name << "]" << std::endl;
+#endif
 				MapHolder<void, Args...>::Functions[name](std::forward<Args>(args)...);
 			}
 		};
@@ -118,7 +120,7 @@ private:
 		CallAndPush<Ret, Args...>(function);
 		if (!eq<void, Ret>::result)
 		{
-			if (std::is_base_of<ILuaMember, Ret>::value) {
+			if (std::is_base_of<Base_of_ReturnToLua, Ret>::value) {
 				return LuaManager::StackSize() - stackSize;
 			}
 			else
@@ -137,7 +139,7 @@ private:
 		CallAndPush<Ret, Args...>(functionName);
 		if (!eq<void, Ret>::result)
 		{
-			if (std::is_base_of<ILuaMember, Ret>::value) {
+			if (std::is_base_of<Base_of_ReturnToLua, Ret>::value) {
 				return LuaManager::StackSize() - stackSize;
 			}
 			else
@@ -152,13 +154,18 @@ private:
 		const int params = sizeof...(Args);
 		ILuaMember* luaMember = dynamic_cast<ILuaMember*>(pClass);
 		name = LuaFunctionsWrapper::GenerateFuncName(name, pClass);
+#ifdef LUA_WRAPPER_DEBUG
 		ILuaMember_CALL_EXISTS(Ret, Args...)
+#endif
 			if (!luaMember) {
+#ifdef LUA_WRAPPER_DEBUG
 				std::cout << "ERROR: Class of C function [" << name << "] is not a Lua member" << std::endl;
+#endif
 				return false;
 			}
-		if (LuaWrapperDefined::DEBUG)
+#ifdef LUA_WRAPPER_DEBUG
 			std::cout << "Register C function [" << name << "] with [" << params << "] arguments" << std::endl;
+#endif
 		return true;
 	}
 
@@ -183,9 +190,10 @@ private:
 	static bool RegisterCallerStatic(std::string name, Ret(*Callback)(Args...), std::integer_sequence<int, Is...>) {
 		const int params = sizeof...(Args);
 		name = LuaFunctionsWrapper::GenerateFuncName(name, nullptr);
+#ifdef LUA_WRAPPER_DEBUG
 		ILuaMember_CALL_EXISTS(Ret, Args...)
-		if (LuaWrapperDefined::DEBUG)
-			std::cout << "Register a static C function [" << name << "] with [" << params << "] arguments" << std::endl;
+		std::cout << "Register a static C function [" << name << "] with [" << params << "] arguments" << std::endl;
+#endif
 		MapHolder<Ret, Args...>::Functions[name] = std::bind(Callback, my_placeholder<Is + 1>::ph...);
 		return true;
 	}
@@ -252,10 +260,10 @@ public:
 		return CallAndRet<Ret, Args...>::Function<Ret, Args...>::CallMemFunc(name, std::forward<Args>(args)...);
 	}
 
-	/* --------------- Create a instance of RetValues with a specific parameter ---------------- */
+	/* --------------- Create a instance of RetValuesToLua with specific parameters ---------------- */
 	template<typename ...Args>
-	inline static RetValues<Args...> RetV(Args... args) {
-		return RetValues<Args...>(args...);
+	inline static RetValuesToLua<Args...> ReturnValuesToLua(Args... args) {
+		return RetValuesToLua<Args...>(args...);
 	};
 };
 

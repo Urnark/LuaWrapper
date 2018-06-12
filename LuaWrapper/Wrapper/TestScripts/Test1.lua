@@ -14,9 +14,12 @@ function HelloWorld()
 end
 
 function Update(ptr)
-	print("\nCalled [Update] From [Test1.lua]")
+	print("\n[Test1.lua] with ptr ID [" .. ptr.id .. "]")
 	ptr:Print("Hello!!")
+
 	x, y, z = ptr:GetPoint(2, 3)
 	print("x: " .. x .. ", y: " .. y .. ", z: " .. z)
-	print("ID: " .. ptr.id)
+
+	x, y, z = ptr:GetPoint2(2, 3)
+	print("x: " .. x .. ", y: " .. y .. ", z: " .. z)
 end

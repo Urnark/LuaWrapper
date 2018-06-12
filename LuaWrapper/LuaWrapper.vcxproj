@@ -180,7 +180,6 @@
     <ClCompile Include="Lua\lutf8lib.c" />
     <ClCompile Include="Lua\lvm.c" />
     <ClCompile Include="Lua\lzio.c" />
-    <ClCompile Include="Wrapper\LuaWrapperDefined.cpp" />
     <ClCompile Include="Wrapper\EntityHandeler\ILuaMember.cpp" />
     <ClCompile Include="Wrapper\FunctionWrapper\LuaFunctionsWrapper.cpp" />
     <ClCompile Include="Wrapper\Manager\LuaManager.cpp" />
@@ -213,7 +212,6 @@
     <ClInclude Include="Lua\lundump.h" />
     <ClInclude Include="Lua\lvm.h" />
     <ClInclude Include="Lua\lzio.h" />
-    <ClInclude Include="Wrapper\LuaWrapperDefined.h" />
     <ClInclude Include="Wrapper\EntityHandeler\ILuaMember.h" />
     <ClInclude Include="Wrapper\FunctionWrapper\LuaFunctionsWrapper.h" />
     <ClInclude Include="Wrapper\Manager\LuaManager.h" />
