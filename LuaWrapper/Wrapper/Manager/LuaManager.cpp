@@ -77,9 +77,7 @@ void LuaManager::LoadScript(const std::string & pPath)
 	}
 	else
 	{
-#ifdef LUA_WRAPPER_DEBUG
 		std::cout << "[" << pPath << "] Script loaded successfully" << std::endl;
-#endif
 	}
 }
 

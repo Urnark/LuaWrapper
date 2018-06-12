@@ -71,7 +71,7 @@ private:
 	struct CallAndRet {
 		template<typename Ret, typename... Args> struct Function {
 			static Ret CallMemFunc(const std::string &name, Args &&... args) {
-#ifdef LUA_WRAPPER_DEBUG
+#if LUA_WRAPPER_DEBUG
 				CALL_RET_ERROR(Ret, Args...)
 				std::cout << "Called C function [" << name << "]" << std::endl;
 #endif
@@ -80,7 +80,7 @@ private:
 		};
 		template<> struct Function<void, Args...> {
 			static void CallMemFunc(const std::string &name, Args &&... args) {
-#ifdef LUA_WRAPPER_DEBUG
+#if LUA_WRAPPER_DEBUG
 				CALL_RET_ERROR(void, Args...)
 					std::cout << "Called C function [" << name << "]" << std::endl;
 #endif
@@ -154,16 +154,16 @@ private:
 		const int params = sizeof...(Args);
 		ILuaMember* luaMember = dynamic_cast<ILuaMember*>(pClass);
 		name = LuaFunctionsWrapper::GenerateFuncName(name, pClass);
-#ifdef LUA_WRAPPER_DEBUG
+#if LUA_WRAPPER_DEBUG
 		ILuaMember_CALL_EXISTS(Ret, Args...)
 #endif
 			if (!luaMember) {
-#ifdef LUA_WRAPPER_DEBUG
+#if LUA_WRAPPER_DEBUG
 				std::cout << "ERROR: Class of C function [" << name << "] is not a Lua member" << std::endl;
 #endif
 				return false;
 			}
-#ifdef LUA_WRAPPER_DEBUG
+#if LUA_WRAPPER_DEBUG
 			std::cout << "Register C function [" << name << "] with [" << params << "] arguments" << std::endl;
 #endif
 		return true;
@@ -190,7 +190,7 @@ private:
 	static bool RegisterCallerStatic(std::string name, Ret(*Callback)(Args...), std::integer_sequence<int, Is...>) {
 		const int params = sizeof...(Args);
 		name = LuaFunctionsWrapper::GenerateFuncName(name, nullptr);
-#ifdef LUA_WRAPPER_DEBUG
+#if LUA_WRAPPER_DEBUG
 		ILuaMember_CALL_EXISTS(Ret, Args...)
 		std::cout << "Register a static C function [" << name << "] with [" << params << "] arguments" << std::endl;
 #endif

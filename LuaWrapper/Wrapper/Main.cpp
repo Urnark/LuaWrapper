@@ -1,5 +1,5 @@
 
-#define LUA_WRAPPER_DEBUG
+#define LUA_WRAPPER_DEBUG false
 
 #include "FunctionWrapper\LuaFunctionsWrapper.h"
 
