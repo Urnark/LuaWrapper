@@ -115,29 +115,6 @@ namespace LFW {
 			return LuaManager::GetFloat(pL);
 		}
 
-	public:
-		// Push values to lua
-		template <typename Arg>
-		static void Push(lua_State * L, Arg&& arg) {
-			//return _push<Arg>(L, std::forward<Arg>(arg));
-			return _push(L, std::forward<Arg>(arg));
-		}
-		template <typename Arg>
-		static void Push(Arg&& arg) {
-			return _push(LuaManager::GetCurrentState(), std::forward<Arg>(arg));
-		}
-	
-		template <typename... Args>
-		static void Push_all(lua_State * L, Args&&... args) {
-			std::initializer_list<int>{(Push<Args>(L, std::forward<Args>(args)), 0)...};
-		}
-
-		// Get values from lua
-		template <typename Ret>
-		static Ret Get(lua_State * L) {
-			return _get<Ret>(L);
-		}
-	
 		template<typename Ret, typename... Args>
 		struct Func {
 			template<typename Ret, typename... Args> struct Function {
@@ -162,6 +139,29 @@ namespace LFW {
 				}
 			};
 		};
+
+	public:
+		// Push values to lua
+		template <typename Arg>
+		static void Push(lua_State * L, Arg&& arg) {
+			//return _push<Arg>(L, std::forward<Arg>(arg));
+			return _push(L, std::forward<Arg>(arg));
+		}
+		template <typename Arg>
+		static void Push(Arg&& arg) {
+			return _push(LuaManager::GetCurrentState(), std::forward<Arg>(arg));
+		}
+	
+		template <typename... Args>
+		static void Push_all(lua_State * L, Args&&... args) {
+			std::initializer_list<int>{(Push<Args>(L, std::forward<Args>(args)), 0)...};
+		}
+
+		// Get values from lua
+		template <typename Ret>
+		static Ret Get(lua_State * L) {
+			return _get<Ret>(L);
+		}
 
 		// If the lua function returns more than one values
 		template <typename Ret, typename... Args>
