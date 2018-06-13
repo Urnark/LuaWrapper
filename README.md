@@ -329,5 +329,5 @@ end
 <a name="license"/></a>
 ### License
 [MIT](LICENSE.md)<br />
-![alt text](https://www.lua.org/images/lua-language.gif)<br />
+[![alt text](https://www.lua.org/images/lua-language.gif)](http://www.lua.org/)<br />
 [Lua License](LuaWrapper/Lua/LuaLICENSE.txt)
