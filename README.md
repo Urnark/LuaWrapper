@@ -3,12 +3,16 @@
 #### This project is not done. The code might change
 
 ### Table of Contents
-  1. [Documentation](documentation)
-     - [Start and close the LuaWrapper](init-luawrapper)
+  1. [Documentation](#documentation)
+     - [Start and close the LuaWrapper](#init-luawrapper)
      - [Load a Lua script](#load-lua-script)
-     - [Create and use more Lua states](more-lua-states)
-# [Documentation](#documentation)
-### [Start and close the LuaWrapper](#init-luawrapper)
+     - [Create and use more Lua states](#more-lua-states)
+     - [Register a C++ function](#register-function)
+
+<a name="documentation"/></a>
+# Documentation
+<a name="init-luawrapper"/></a>
+### Start and close the LuaWrapper
 To use the LuaWrapper it is needed to initialize the wrapper. You can do that by calling the function "InitLuaManager".
 ```c++
 void LuaManager::InitLuaManager(lua state name);
@@ -30,7 +34,8 @@ void LuaManager::LoadScript(lua state name, path of lua script);
 
 The first argument is only there to make the code smaller, more about using more Lua states in a program esists [here](more-lua-states).
 
-### [Create and use more Lua states](#more-lua-states)
+<a name="more-lua-states"/></a>
+### Create and use more Lua states
 It is possible to create more lua states and have c++ functions that can only be called from a specific Lua state.
 Three function exists to help with that:
 ```c++
@@ -83,6 +88,7 @@ void main() {
 ```
 Now the function "foo()" can only be called from Lua state "Init" and "bar()" can only be called from Lua state "SecondLuaState"
 
+<a name="register-function"/></a>
 ### Register a C++ function
 
 ```c++
