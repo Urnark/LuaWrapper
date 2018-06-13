@@ -17,6 +17,7 @@
 # Documentation
 <a name="init-luawrapper"/></a>
 ### Start and close the LuaWrapper
+Every function in the LuaWrapper is in the namespace LFW (Lua Function Wrapper).
 To use the LuaWrapper it is needed to initialize the wrapper. You can do that by calling the function "InitLuaManager".
 ```c++
 void LuaManager::InitLuaManager(lua state name);
@@ -338,7 +339,7 @@ The flags that can be used are:
 To set a flag you only need to do this in the top of your main function:
 ```C++
 void main() {
-  LFW::LuaManager::DEBUG_FLAGS = LFW::ERRORS | LFW::DEBUG_PRINTS | LFW::FUNCTION_CALLS | LFW::REGISTER_FUNCTIONS;
+  LuaManager::DEBUG_FLAGS = LFW::ERRORS | LFW::DEBUG_PRINTS | LFW::FUNCTION_CALLS | LFW::REGISTER_FUNCTIONS;
   // more code
 }
 ```
