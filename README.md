@@ -120,20 +120,21 @@ void main() {
   // Init lua
   LuaManager::InitLuaManager();
 
-  // Load a Lua script
-  LuaManager::LoadScript("LuaTestScript1.lua");
-
   // Register a global function so it can be used in a Lua script
   LuaFunctionsWrapper::RegisterCFunction("foo", &foo);
   
   // Register a member function so it can be used in a Lua script
   Bar bar;
   LuaFunctionsWrapper::RegisterCFunction("IsPositive", &bar, &Bar::IsPositive);
+
+  // Load a Lua script
+  LuaManager::LoadScript("LuaTestScript1.lua");
   
   // Close Lua
   LuaManager::CloseLuaManager();
 }
 ```
+Need to register functions before calling "LoadScript". Else you can need to call c++ functions in a Lua function
 
 In the Lua script
 ```Lua
