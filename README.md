@@ -10,6 +10,7 @@
      - [Call a Lua function](#call-lua-function)
      - [Register a C++ function as a global function in Lua](#register-global-function)
      - [Register a C++ function as a member function in Lua](#register-member-function)
+     - [C++ function returning more than one values to Lua](#return-more-values)
      - [Show debug information](#debug-flags)
   2. [License](#license)
 
@@ -66,8 +67,6 @@ void foo() {
 void bar() {
   std::cout << "Called function bar" << std::endl;
 }
-
-using namespace LFW;
 
 void main() {
   // Init lua
@@ -237,8 +236,6 @@ public:
   }
 }
 
-using namespace LFW;
-
 void main() {
   // Init lua
   LuaManager::InitLuaManager();
@@ -327,6 +324,115 @@ function UpdateBar(bar)
   positiveNr = bar:IsPositive(34)
   print(positiveNr)
 end
+```
+
+<a name="return-more-values"/></a>
+### C++ function returning more than one values to Lua
+A C++ function can return more than one value to Lua if it is called. It exists two ways to do that, the first is to use the macro "LFW_ReturnValues" and "LFW_ReturnType".
+```C++
+LFW_ReturnValues(returnValues);
+```
+- returnValues = the values that shall be passed to Lua
+
+"LFW_ReturnType" is only a macro that replaces itself with auto. It is used to know if a function only shall be used to return values to Lua.
+
+Example on how to use it:
+```c++
+LFW_ReturnType foo(int nr) {
+  std::cout << "Called function foo with number: " << nr << std::endl;
+  return LFW_ReturnValues(nr, 30);
+}
+
+void main() {
+  // Init lua
+  LuaManager::InitLuaManager();
+
+  // Register the function foo that returns more than one values
+  LuaFunctionsWrapper::RegisterCFunction("foo", &foo);
+
+  // Load a Lua script
+  LuaManager::LoadScript("LuaTestScript1.lua");
+  
+  // Close Lua
+  LuaManager::CloseLuaManager();
+}
+```
+And in the Lua script file:
+```Lua
+-- LuaTestScript1.lua --
+
+x, y = foo(0)
+print("x: " .. x .. ", y: " .. y)
+```
+Now the output in the console is:
+```
+x: 0, y: 30
+```
+
+The other way to do so a function returns more than one values is by creating a struct or class that inherits from the class "ReturnToLua". How to inherit from "ReturnToLua"
+```c++
+struct Bar : ReturnToLua<int, std::string>
+{
+	int a;
+	std::string b;
+	// Need to set which variables that shall be returned
+	void SetReturnVariables() {
+		LFW_SetReturnValues(a, b);
+	};
+};
+```
+Here we see that "ReturnToLua" need to know which type of variables that it need to return. That is why it is needed to write the types in the <>. It need also know which variables that it shall return the values of, it is done by defining the virtual function "SetReturnVariables" and use the macro "LFW_SetReturnValues".
+```C++
+LFW_SetReturnValues(returnValues);
+```
+- returnValues = the values that shall be passed to Lua
+
+This is an example of how to use it:
+```c++
+struct Bar : ReturnToLua<int, std::string>
+{
+	int a;
+	std::string b;
+	// Need to set which variables that shall be returned
+	void SetReturnVariables() {
+		LFW_SetReturnValues(a, b);
+	};
+};
+
+Bar bar;
+
+Bar foo(int nr) {
+  bar.a = nr;
+  return bar;
+}
+
+void main() {
+  // Init lua
+  LuaManager::InitLuaManager();
+
+  // Register the function foo that returns more than one values
+  LuaFunctionsWrapper::RegisterCFunction("foo", &foo);
+  
+  // Set bar.b
+  bar.b = "Hello from foo";
+  
+  // Load a Lua script
+  LuaManager::LoadScript("LuaTestScript1.lua");
+  
+  // Close Lua
+  LuaManager::CloseLuaManager();
+}
+```
+And in the Lua script file:
+```Lua
+-- LuaTestScript1.lua --
+
+a, b = foo(0)
+print("a: " .. a .. ", b: " .. b)
+```
+Now the output in the console is:
+```
+a: 0, b: Hello from foo
 ```
 
 <a name="debug-flags"/></a>
