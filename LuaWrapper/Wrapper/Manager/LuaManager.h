@@ -62,7 +62,6 @@ namespace LFW {
 		template<int index, typename... Args>
 		struct iterateGetTuple {
 			void operator() (std::tuple<Args...> t, std::tuple<Args&...>& tu) {
-				const auto size = std::tuple_size<std::tuple<Args...>>::value;
 				typedef std::remove_reference<decltype(std::get<index>(t))>::type type;
 				std::get<index>(tu) = Get<type>(GetCurrentState());
 				iterateGetTuple<index - 1, Args...>{}(t, tu);
@@ -197,12 +196,12 @@ namespace LFW {
 
 		// If the lua function returns more than one values
 		template <typename Ret, typename... Args>
-		static Ret CallLuaFunctionS(const std::string & pFuncName, int r, Args&& ... args) {
-			return Func<Ret, Args...>::Function<Ret, Args...>::CallLuaFunction(pFuncName, r, std::forward<Args>(args)...);
+		static Ret CallLuaFunction(const std::string & pFuncName, int nrOfRets, Args&& ... args) {
+			return Func<Ret, Args...>::Function<Ret, Args...>::CallLuaFunction(pFuncName, nrOfRets, std::forward<Args>(args)...);
 		}
 		// If the lua function returns more than one values
 		template <size_t nrOfRets, typename... Args>
-		static void CallLuaFunctionS(const std::string & pFuncName, Args&& ... args) {
+		static void CallLuaFunction(const std::string & pFuncName, Args&& ... args) {
 			return Func<void, Args...>::Function<void, Args...>::CallLuaFunction(pFuncName, nrOfRets, std::forward<Args>(args)...);
 		}
 

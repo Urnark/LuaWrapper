@@ -30,7 +30,12 @@ if (ptr == nullptr) {\
 
 #define LFW_CALL_RET_ERROR(ret, args) LFW_CALL_ERROR(ret, args, ret())
 
-#define LFW_function(name, entity, function) { ##name, LFW::LuaFunctionsWrapper::GetRegisterFunction(##name, &##entity, &##function) }
+#define LFW_RegisterCObjectFunction(obj, ...)\
+decltype(obj) LFW__obj = obj;\
+luaL_Reg mFuncList[] = { __VA_ARGS__, { NULL, NULL } };\
+LFW::LuaFunctionsWrapper::RegisterCObject(&##obj, mFuncList);
+
+#define LFW_function(name, function) { ##name, LFW::LuaFunctionsWrapper::GetRegisterFunction(##name, &LFW__obj, &##function) }
 #define LFW_ReturnValues(...) LFW::LuaFunctionsWrapper::ReturnValuesToLua(__VA_ARGS__)
 #define LFW_ReturnType auto
 #define LFW_SetReturnValues(...) returnValues = std::make_tuple(__VA_ARGS__)

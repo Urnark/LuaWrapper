@@ -76,14 +76,20 @@ int main()
 	std::vector<Test> ts = { Test(), Test() };
 	for (Test& t : ts)
 	{
+		/*
 		luaL_Reg mFuncList[] = {
 			LFW_function("Print", t, Test::Print),
 			LFW_function("GetPoint", t, Test::GetPoint),
 			LFW_function("GetPoint2", t, Test::GetPoint2),
 			{ NULL, NULL }
 		};
-
 		LFW::LuaFunctionsWrapper::RegisterCObject(&t, mFuncList);
+		*/
+		LFW_RegisterCObjectFunction(t,
+			LFW_function("Print", Test::Print), 
+			LFW_function("GetPoint", Test::GetPoint), 
+			LFW_function("GetPoint2", Test::GetPoint2)
+		);
 	}
 
 	LFW::LuaManager::LoadScript("Wrapper/TestScripts/Test1.lua");
@@ -108,9 +114,15 @@ int main()
 	LFW::LuaManager::CallLuaFunction<void>("Update", &ts[0]);
 	LFW::LuaManager::CallLuaFunction<void>("Update", &ts[1]);
 
-	int ret1 = 0;
-	std::string ret2 = "";
-	LFW::LuaManager::CallLuaFunctionS<2>("Testing2");
+	int ret1;
+	std::string ret2;/*
+	if (LFW::LuaManager::CallLuaFunction<bool>("Testing2"))
+	{
+		float x = LFW::LuaManager::GetFloat();
+		float y = LFW::LuaManager::GetFloat();
+	}*/
+
+	LFW::LuaManager::CallLuaFunction<2>("Testing2");
 	LFW::LuaManager::GetAll(ret1, ret2);
 	std::cout << "Returning: " << ret1 << ", " << ret2 << std::endl;
 
