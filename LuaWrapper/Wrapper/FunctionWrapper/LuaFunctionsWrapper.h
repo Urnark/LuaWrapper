@@ -30,7 +30,7 @@ if (ptr == nullptr) {\
 
 #define LFW_CALL_RET_ERROR(ret, args) LFW_CALL_ERROR(ret, args, ret())
 
-#define LFW_RegisterCObjectFunction(obj, ...)\
+#define LFW_RegisterCObjectFunctions(obj, ...)\
 decltype(obj) LFW__obj = obj;\
 luaL_Reg mFuncList[] = { __VA_ARGS__, { NULL, NULL } };\
 LFW::LuaFunctionsWrapper::RegisterCObject(&##obj, mFuncList);

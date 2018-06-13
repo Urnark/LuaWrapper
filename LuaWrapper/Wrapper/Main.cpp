@@ -79,16 +79,7 @@ int main()
 	std::vector<Test> ts = { Test(), Test() };
 	for (Test& t : ts)
 	{
-		/*
-		luaL_Reg mFuncList[] = {
-			LFW_function("Print", t, Test::Print),
-			LFW_function("GetPoint", t, Test::GetPoint),
-			LFW_function("GetPoint2", t, Test::GetPoint2),
-			{ NULL, NULL }
-		};
-		LFW::LuaFunctionsWrapper::RegisterCObject(&t, mFuncList);
-		*/
-		LFW_RegisterCObjectFunction(t,
+		LFW_RegisterCObjectFunctions(t,
 			LFW_function("Print", Test::Print), 
 			LFW_function("GetPoint", Test::GetPoint), 
 			LFW_function("GetPoint2", Test::GetPoint2)
