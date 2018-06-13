@@ -346,7 +346,7 @@ void main() {
     LFW_function("Print", Test::Print),<br />
     { NULL, NULL }
   };
-	LuaFunctionsWrapper::RegisterCObject(&bar, mFuncList);
+  LuaFunctionsWrapper::RegisterCObject(&bar, mFuncList);
   
   // Load a Lua script
   LuaManager::LoadScript("LuaTestScript1.lua");
