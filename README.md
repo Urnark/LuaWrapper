@@ -19,9 +19,8 @@ And when done to use the LuaWrapper it is needed to close it. You can do that by
 ```c++
 void LuaManager::CloseLuaManager();
 ```
-
+<a name="load-lua-script"/></a>
 ### Load a Lua script
-<a name="load-lua-script"/>
 To load a Lua script so it can be used in the program, the function "LoadScript" is used.
 ```c++
 void LuaManager::LoadScript(lua state name, path of lua script);
@@ -29,7 +28,7 @@ void LuaManager::LoadScript(lua state name, path of lua script);
 - lua state name = the name of the Lua script that the script shall belong to
 - path of lua script = the path to the Lua script
 
-Thr first argument is only there to make the code smaller, more about using more Lua states in a program esists [here](more-lua-states).
+The first argument is only there to make the code smaller, more about using more Lua states in a program esists [here](more-lua-states).
 
 ### [Create and use more Lua states](#more-lua-states)
 It is possible to create more lua states and have c++ functions that can only be called from a specific Lua state.
