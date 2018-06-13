@@ -4,12 +4,13 @@
 
 ### Table of Contents
   1. [Documentation](#documentation)
-     - [Start and close the LuaWrapper](#init-luawrapper)
-     - [Load a Lua script](#load-lua-script)
-     - [Create and use more Lua states](#more-lua-states)
-     - [Call a Lua function](#call-lua-function)
-     - [Register a C++ function as a global function in Lua](#register-global-function)
-     - [Register a C++ function as a member function in Lua](#register-member-function)
+    - [Start and close the LuaWrapper](#init-luawrapper)
+    - [Load a Lua script](#load-lua-script)
+    - [Create and use more Lua states](#more-lua-states)
+    - [Call a Lua function](#call-lua-function)
+    - [Register a C++ function as a global function in Lua](#register-global-function)
+    - [Register a C++ function as a member function in Lua](#register-member-function)
+  2. [License](#license)
 
 <a name="documentation"/></a>
 # Documentation
@@ -324,3 +325,8 @@ function UpdateBar(bar)
   print(positiveNr)
 end
 ```
+
+<a name="license"/></a>
+### License
+[MIT](#LICENSE)
+[Lua License](LuaWrapper/Lua/LuaLICENSE.txt)
