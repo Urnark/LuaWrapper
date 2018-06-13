@@ -328,32 +328,6 @@ function UpdateBar(bar)
   print(positiveNr)
 end
 ```
-It is also possible to use the function "RegisterCObject" to register member functions:
-```c++
-void LuaFunctionsWrapper::RegisterCObject(classInstance, functions);
-```
-- classInstance = the class that the function is a member function of
-- functions = a array of type "luaL_Reg" for all the functions that the class instance shall be able to use.
-
-With the same code as the example before but with the function "RegisterCObject":
-```C++
-void main() {
-  // code ...
-  
-  Bar bar;
-  luaL_Reg mFuncList[] = {
-    LFW_function("IsPositive", Test::IsPositive),
-    LFW_function("Print", Test::Print),
-    { NULL, NULL }
-  };
-  LuaFunctionsWrapper::RegisterCObject(&bar, mFuncList);
-  
-  // Load a Lua script
-  LuaManager::LoadScript("LuaTestScript1.lua");
-  
-   // code ...
-}
-```
 
 <a name="debug-flags"/></a>
 ### Show debug information
