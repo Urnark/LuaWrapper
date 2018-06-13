@@ -208,7 +208,6 @@ namespace LFW {
 		// If the lua function returns one or none values
 		template <typename Ret, typename... Args>
 		static Ret CallLuaFunction(const std::string & pFuncName, Args&& ... args) {
-			std::cout << sizeof...(Args) << std::endl;
 			return Func<Ret, Args...>::Function<Ret, Args...>::CallLuaFunction(pFuncName, 0, std::forward<Args>(args)...);
 		}
 
