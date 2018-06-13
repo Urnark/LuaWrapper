@@ -341,9 +341,9 @@ void main() {
   // code ...
   
   Bar bar;
-  luaL_Reg mFuncList[] = {<br />
-    LFW_function("IsPositive", Test::IsPositive), <br />
-    LFW_function("Print", Test::Print),<br />
+  luaL_Reg mFuncList[] = {
+    LFW_function("IsPositive", Test::IsPositive),
+    LFW_function("Print", Test::Print),
     { NULL, NULL }
   };
   LuaFunctionsWrapper::RegisterCObject(&bar, mFuncList);
