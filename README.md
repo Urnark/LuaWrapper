@@ -269,11 +269,12 @@ positiveNr = IsPositive(34)
 print(positiveNr)
 
 ```
+
 <a name="register-member-function"/></a>
 ### Register a C++ function as a member function in Lua
-The function that is used to register c++ function for Lua to use as a member fucntion for a c++ class that is passed to Lua is "LFW_RegisterCObjectFunction".
+The function that is used to register c++ function for Lua to use as a member fucntion for a c++ class that is passed to Lua is "LFW_RegisterCObjectFunctions".
 ```c++
-LFW_RegisterCObjectFunction(classInstance, LFW_function(functionName, function)...);
+LFW_RegisterCObjectFunctions(classInstance, LFW_function(functionName, function)...);
 ```
 - classInstance = the class that the function is a member function of
 - LFW_function(functionName, function)... = for all the functions that the class instance shall be able to use.
@@ -302,7 +303,7 @@ void main() {
   LuaManager::InitLuaManager();
   
   Bar bar;
-  LFW_RegisterCObjectFunction(bar,
+  LFW_RegisterCObjectFunctions(bar,
     LFW_function("IsPositive", Test::IsPositive), 
     LFW_function("Print", Test::Print)
   );
@@ -326,6 +327,32 @@ function UpdateBar(bar)
   positiveNr = bar:IsPositive(34)
   print(positiveNr)
 end
+```
+It is also possible to use the function "RegisterCObject" to register member functions:
+```c++
+void LuaFunctionsWrapper::RegisterCObject(classInstance, functions);
+```
+- classInstance = the class that the function is a member function of
+- functions = a array of type "luaL_Reg" for all the functions that the class instance shall be able to use.
+
+With the same code as the example before but with the function "RegisterCObject":
+```C++
+void main() {
+  // code ...
+  
+  Bar bar;
+  luaL_Reg mFuncList[] = {<br />
+    LFW_function("IsPositive", Test::IsPositive), <br />
+    LFW_function("Print", Test::Print),<br />
+    { NULL, NULL }
+  };
+	LuaFunctionsWrapper::RegisterCObject(&bar, mFuncList);
+  
+  // Load a Lua script
+  LuaManager::LoadScript("LuaTestScript1.lua");
+  
+   // code ...
+}
 ```
 
 <a name="debug-flags"/></a>
