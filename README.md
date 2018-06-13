@@ -7,7 +7,9 @@
      - [Start and close the LuaWrapper](#init-luawrapper)
      - [Load a Lua script](#load-lua-script)
      - [Create and use more Lua states](#more-lua-states)
-     - [Register a C++ function](#register-function)
+     - [Call a Lua function](#call-lua-function)
+     - [Register a C++ function as a global function in Lua](#register-global-function)
+     - [Register a C++ function as a member function in Lua](#register-member-function)
 
 <a name="documentation"/></a>
 # Documentation
@@ -51,7 +53,7 @@ void LuaManager::UseLuaState(lua state index);
 ```
 - lua state index = the name of the Lua state that it shall switch to. Where the index is the order that the Lua state was added to the LuaWrapper. Lua state "Init" have the index "0".
 
-The function that takes a index as parameter is faster than the other. So if you need to have a faster code then that is what you shall use.
+The function that takes a index as parameter is faster than the other. So if you need to have a faster code then that is what you should use.
 
 An example to have two Lua states:
 ```c++
@@ -71,7 +73,7 @@ void main() {
   
   // Load a Lua script
   LuaManager::LoadScript("LuaTestScript1.lua");
-  LuaManager::LoadScript("SecondLuaState", "LuaTestScript1.lua");
+  LuaManager::LoadScript("SecondLuaState", "LuaTestScript2.lua");
   
   // Change and use Luse state "Init"
   LuaManager::UseLuaState("Init");
@@ -88,9 +90,16 @@ void main() {
 ```
 Now the function "foo()" can only be called from Lua state "Init" and "bar()" can only be called from Lua state "SecondLuaState"
 
-<a name="register-function"/></a>
-### Register a C++ function
+<a name="call-lua-function"/></a>
+### Call a Lua function
+To call a Lua function use the function "CallLuaFunction".
+```C++
 
+```
+
+<a name="register-global-function"/></a>
+### Register a C++ function as a global function in Lua
+The function that is used to register c++ function for Lua to use as a global Lua function is "RegisterCFunction".
 ```c++
 bool LuaFunctionsWrapper::RegisterCFunction(functionName, classInstance, function)
 ```
@@ -145,4 +154,62 @@ foo()
 positiveNr = IsPositive(34)
 print(positiveNr)
 
+```
+<a name="register-member-function"/></a>
+### Register a C++ function as a member function in Lua
+The function that is used to register c++ function for Lua to use as a member fucntion for a c++ class that is passed to Lua is "LFW_RegisterCObjectFunction".
+```c++
+LFW_RegisterCObjectFunction(classInstance, LFW_function(functionName, function)...)
+```
+- classInstance = the class that the function is a member function of
+- LFW_function(functionName, function)... = for all the functions that the class instance shall be able to use.
+```c++
+LFW_function(functionName, function)
+```
+- functionName = the name that the function has in Lua
+- function = the function that shall be registered
+
+An exapmle of how it is used:
+```C++
+// If a function in a class shall be used in Lua then it need to inherit from ILuaMember
+class Bar : public ILuaMember
+{
+public:
+  void Print() {
+    std::cout << "This is a Bar instance" << std::endl;
+  }
+  bool IsPositive(int i) {
+    return (i < 0? false: true);
+  }
+}
+
+void main() {
+  // Init lua
+  LuaManager::InitLuaManager();
+  
+  Bar bar;
+  LFW_RegisterCObjectFunction(bar,
+    LFW_function("IsPositive", Test::IsPositive), 
+    LFW_function("Print", Test::Print)
+  );
+  
+  // Load a Lua script
+  LuaManager::LoadScript("LuaTestScript1.lua");
+  
+  // Call the Lua function that shall be used and pass the class instance as a parameter to it
+  LuaManager::CallLuaFunction<void>("UpdateBar", &bar);
+  
+  // Close Lua
+  LuaManager::CloseLuaManager();
+}
+```
+And in the Lua script file:
+```Lua
+-- LuaTestScript1.lua --
+
+function UpdateBar(bar)
+  bar:Print()
+  positiveNr = bar:IsPositive(34)
+  print(positiveNr)
+end
 ```
