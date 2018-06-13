@@ -216,7 +216,9 @@ bool LuaFunctionsWrapper::RegisterCFunction(functionName, classInstance, functio
 - classInstance = the class that the function is a member function of
 - function = the function that shall be registered
 
-return = if an error occurred returns false, eller true
+classInstance is not needed if the function is not a member fucntion or if the function is static
+
+return = if an error occurred returns false, else true
 
 ```c++
 void foo() {
