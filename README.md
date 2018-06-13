@@ -364,7 +364,7 @@ And in the Lua script file:
 x, y = foo(0)
 print("x: " .. x .. ", y: " .. y)
 ```
-Now the out put in the console is:
+Now the output in the console is:
 ```
 x: 0, y: 30
 ```
@@ -430,7 +430,7 @@ And in the Lua script file:
 a, b = foo(0)
 print("a: " .. a .. ", b: " .. b)
 ```
-Now the out put in the console is:
+Now the output in the console is:
 ```
 a: 0, b: Hello from foo
 ```
