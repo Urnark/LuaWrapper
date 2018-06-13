@@ -101,7 +101,7 @@ int main()
 	LFW::LuaManager::UseLuaState("TestLuaState");
 	LFW::LuaFunctionsWrapper::RegisterCFunction("Testing", &ts[0], &Test::Testing);
 	LFW::LuaFunctionsWrapper::RegisterCFunction("Testing2", &ts[0], &Test::Testing2);
-
+	
 	// Call lua function
 	LFW::LuaManager::UseLuaState("Init");
 	LFW::LuaManager::CallLuaFunction<void>("HelloWorld");
@@ -125,7 +125,7 @@ int main()
 	std::cout << "Returning: " << ret1 << ", " << ret2 << std::endl;
 
 	LFW::LuaManager::UseLuaState("TestLuaState");
-	LFW::LuaManager::CallLuaFunction<void>("HelloWorld");
+	std::cout << "Return form HelloWorld in Test2.lua: " << LFW::LuaManager::CallLuaFunction<std::string>("HelloWorld") << std::endl;
 
 	std::system("pause");
 

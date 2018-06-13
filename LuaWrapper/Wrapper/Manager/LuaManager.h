@@ -147,8 +147,8 @@ namespace LFW {
 					const int params = sizeof...(args);
 					lua_getglobal(LuaManager::GetCurrentState(), pFuncName.c_str());
 					PushAll(LuaManager::GetCurrentState(), std::forward<Args>(args)...);
-					if (params == 0)
-						lua_pop(LuaManager::GetCurrentState(), -1);
+					//if (params == 0)
+					//	lua_pop(LuaManager::GetCurrentState(), -1);
 					if (r == 0)
 						r = 1;
 					LuaManager::CallLuaFun(pFuncName, params, r);
@@ -208,6 +208,7 @@ namespace LFW {
 		// If the lua function returns one or none values
 		template <typename Ret, typename... Args>
 		static Ret CallLuaFunction(const std::string & pFuncName, Args&& ... args) {
+			std::cout << sizeof...(Args) << std::endl;
 			return Func<Ret, Args...>::Function<Ret, Args...>::CallLuaFunction(pFuncName, 0, std::forward<Args>(args)...);
 		}
 
