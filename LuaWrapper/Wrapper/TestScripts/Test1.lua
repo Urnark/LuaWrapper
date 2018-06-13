@@ -1,5 +1,7 @@
 -- Test1.lua --
 
+Testing(4)
+
 function HelloWorld()
 	print("\nHello World! From [Test1.lua]")
 	Testing(10)
@@ -7,6 +9,7 @@ function HelloWorld()
 
 	ConstFunc();
 	SFunc();
+	Func()
 	SFunc2();
 	
 	local test = require("Wrapper.TestScripts.LibTest")
@@ -28,4 +31,9 @@ function Testing2()
 	print("\nTesting2! From [Test1.lua]")
 	print("Testing .. Testing .. Testing")
 	return 10, "Hej"
+end
+
+function foo(nr)
+	print("\nfoo! From [Test1.lua]")
+	return "Hej", nr
 end

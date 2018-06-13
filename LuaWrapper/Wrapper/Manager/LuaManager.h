@@ -195,8 +195,8 @@ namespace LFW {
 		}
 
 		// If the lua function returns more than one values
-		template <typename Ret, typename... Args>
-		static Ret CallLuaFunction(const std::string & pFuncName, int nrOfRets, Args&& ... args) {
+		template <typename Ret, size_t nrOfRets, typename... Args>
+		static Ret CallLuaFunction(const std::string & pFuncName, Args&& ... args) {
 			return Func<Ret, Args...>::Function<Ret, Args...>::CallLuaFunction(pFuncName, nrOfRets, std::forward<Args>(args)...);
 		}
 		// If the lua function returns more than one values
@@ -217,9 +217,9 @@ namespace LFW {
 
 		static void InitLuaManager(const std::string & pLuaStateName = "Init");
 		static void CloseLuaManager();
-		static void SetState(unsigned int pLuaStateIndex);
-		static void SetState(const std::string & pLuaStateName);
-		static void AddLuaState(const std::string & pLuaStateName);
+		static void UseLuaState(unsigned int pLuaStateIndex);
+		static void UseLuaState(const std::string & pLuaStateName);
+		static void CreateLuaState(const std::string & pLuaStateName);
 
 		static void LoadScript(const std::string & pPath);
 		static void LoadScript(const std::string & pLuaStateName, const std::string & pPath);

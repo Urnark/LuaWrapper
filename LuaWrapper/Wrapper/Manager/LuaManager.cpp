@@ -47,7 +47,7 @@ void LuaManager::CloseLuaManager()
 	}
 }
 
-void LuaManager::SetState(unsigned int pLuaStateIndex)
+void LuaManager::UseLuaState(unsigned int pLuaStateIndex)
 {
 	if (pLuaStateIndex >= 0 && pLuaStateIndex < mLs.size())
 		mCurrentState = pLuaStateIndex;
@@ -55,7 +55,7 @@ void LuaManager::SetState(unsigned int pLuaStateIndex)
 		LFW_PRINT_ERROR("Index[" << pLuaStateIndex << "] out of bounds for the lua state")
 }
 
-void LuaManager::SetState(const std::string & pLuaStateName)
+void LuaManager::UseLuaState(const std::string & pLuaStateName)
 {
 	if (mLuaStateMap.find(pLuaStateName) != mLuaStateMap.end())
 		mCurrentState = mLuaStateMap[pLuaStateName];
@@ -63,7 +63,7 @@ void LuaManager::SetState(const std::string & pLuaStateName)
 		LFW_PRINT_ERROR("The Lua state [" << pLuaStateName << "] do not exist in the LuaManager")
 }
 
-void LuaManager::AddLuaState(const std::string & pLuaStateName)
+void LuaManager::CreateLuaState(const std::string & pLuaStateName)
 {
 	mLs.push_back(luaL_newstate());
 	luaL_openlibs(mLs[mLs.size() - 1]);
@@ -88,17 +88,17 @@ void LuaManager::LoadScript(const std::string & pPath)
 void LuaManager::LoadScript(const std::string & pLuaStateName, const std::string & pPath)
 {
 	unsigned int luaStateIndex = mCurrentState;
-	SetState(pLuaStateName);
+	UseLuaState(pLuaStateName);
 	LoadScript(pPath);
-	SetState(luaStateIndex);
+	UseLuaState(luaStateIndex);
 }
 
 void LuaManager::LoadScript(unsigned int pLuaStateIndex, const std::string & pPath)
 {
 	unsigned int luaStateIndex = mCurrentState;
-	SetState(pLuaStateIndex);
+	UseLuaState(pLuaStateIndex);
 	LoadScript(pPath);
-	SetState(luaStateIndex);
+	UseLuaState(luaStateIndex);
 }
 
 const char * LuaManager::GetFunctionNameFromLua()

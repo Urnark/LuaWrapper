@@ -61,6 +61,9 @@ public:
 static void SFunc() {
 	std::cout << "SFunc: None" << std::endl;
 };
+void Func() {
+	std::cout << "Func: None" << std::endl;
+};
 
 // TODO: clean code
 
@@ -71,7 +74,7 @@ int main()
 
 	LFW::LuaManager::DEBUG_FLAGS = LFW::ERRORS | LFW::DEBUG_PRINTS | LFW::FUNCTION_CALLS | LFW::REGISTER_FUNCTIONS;
 	LFW::LuaManager::InitLuaManager();
-	LFW::LuaManager::AddLuaState("TestLuaState");
+	LFW::LuaManager::CreateLuaState("TestLuaState");
 
 	std::vector<Test> ts = { Test(), Test() };
 	for (Test& t : ts)
@@ -92,22 +95,24 @@ int main()
 		);
 	}
 
+	LFW::LuaFunctionsWrapper::RegisterCFunction("Testing", &ts[0], &Test::Testing);
+
 	LFW::LuaManager::LoadScript("Wrapper/TestScripts/Test1.lua");
 	LFW::LuaManager::LoadScript("TestLuaState", "Wrapper/TestScripts/Test2.lua");
 
 	LFW::LuaFunctionsWrapper::RegisterCFunction("Testing3", &ts[0], &Test::Testing3);
 	LFW::LuaFunctionsWrapper::RegisterCFunction("ConstFunc", &ts[0], &Test::ConstFunc);
+	LFW::LuaFunctionsWrapper::RegisterCFunction("Func", &Func);
 	LFW::LuaFunctionsWrapper::RegisterCFunction("SFunc", &SFunc);
 	LFW::LuaFunctionsWrapper::RegisterCFunction("SFunc2", &Test::SFunc);
 	
-	LFW::LuaFunctionsWrapper::RegisterCFunction("Testing", &ts[0], &Test::Testing);
 
-	LFW::LuaManager::SetState("TestLuaState");
+	LFW::LuaManager::UseLuaState("TestLuaState");
 	LFW::LuaFunctionsWrapper::RegisterCFunction("Testing", &ts[0], &Test::Testing);
 	LFW::LuaFunctionsWrapper::RegisterCFunction("Testing2", &ts[0], &Test::Testing2);
 
 	// Call lua function
-	LFW::LuaManager::SetState("Init");
+	LFW::LuaManager::UseLuaState("Init");
 	LFW::LuaManager::CallLuaFunction<void>("HelloWorld");
 	
 	ts[0].p.z = 100.0f;
@@ -115,18 +120,20 @@ int main()
 	LFW::LuaManager::CallLuaFunction<void>("Update", &ts[1]);
 
 	int ret1;
-	std::string ret2;/*
-	if (LFW::LuaManager::CallLuaFunction<bool>("Testing2"))
+	std::string ret2;
+	if (LFW::LuaManager::CallLuaFunction<int, 2>("foo", 15) > 0)
 	{
-		float x = LFW::LuaManager::GetFloat();
-		float y = LFW::LuaManager::GetFloat();
-	}*/
+		ret2 = LFW::LuaManager::GetString();
+		std::cout << "Returning: " << ret2 << std::endl;
+	}
+	else
+		lua_pop(LFW::LuaManager::GetCurrentState(), -1);
 
 	LFW::LuaManager::CallLuaFunction<2>("Testing2");
 	LFW::LuaManager::GetAll(ret1, ret2);
 	std::cout << "Returning: " << ret1 << ", " << ret2 << std::endl;
 
-	LFW::LuaManager::SetState("TestLuaState");
+	LFW::LuaManager::UseLuaState("TestLuaState");
 	LFW::LuaManager::CallLuaFunction<void>("HelloWorld");
 
 	std::system("pause");
