@@ -94,12 +94,12 @@ namespace LFW {
 		struct CallFunc {
 			template<typename Ret, typename... Args> struct Function {
 				static void CallAndPush(const std::string &name) {
-					LuaManager::Push<Ret>(LuaManager::GetCurrentState(), LuaFunctionsWrapper::CallMemFunc<Ret>(name, LuaManager::Get<Args>(LuaManager::GetCurrentState())...));
+					LuaManager::Push<Ret>(LuaManager::GetCurrentState(), LuaFunctionsWrapper::CallMemFunction<Ret>(name, LuaManager::Get<Args>(LuaManager::GetCurrentState())...));
 				}
 			};
 			template<> struct Function<void, Args...> {
 				static void CallAndPush(const std::string &name) {
-					LuaFunctionsWrapper::CallMemFunc<Ret>(name, LuaManager::Get<Args>(LuaManager::GetCurrentState())...);
+					LuaFunctionsWrapper::CallMemFunction<Ret>(name, LuaManager::Get<Args>(LuaManager::GetCurrentState())...);
 				}
 			};
 		};
@@ -235,7 +235,14 @@ namespace LFW {
 		/* --------------- Register a member function and return the Lua CFunction ---------------- */
 		template<typename Ret, typename Clazz, typename ...Args>
 		static lua_CFunction GetRegisterFunction(std::string name, Clazz* pClass, Ret(Clazz::*Callback)(Args...)) {
-			LuaFunctionsWrapper::RegisterCFunction(name, pClass, Callback);
+			LuaFunctionsWrapper::RegisterCaller(name, pClass, Callback, std::make_integer_sequence<int, sizeof...(Args)>());
+			return LuaFunctionsWrapper::FunctionWrapper2<Ret, Clazz, Args...>;
+		};
+
+		/* --------------- Register a const member function and return the Lua CFunction ---------------- */
+		template<typename Ret, typename Clazz, typename ...Args>
+		static lua_CFunction GetRegisterFunction(std::string name, Clazz* pClass, Ret(Clazz::*Callback)(Args...) const) {
+			LuaFunctionsWrapper::RegisterCaller(name, pClass, Callback, std::make_integer_sequence<int, sizeof...(Args)>());
 			return LuaFunctionsWrapper::FunctionWrapper2<Ret, Clazz, Args...>;
 		};
 
@@ -246,7 +253,7 @@ namespace LFW {
 
 		/* --------------- Call a member function ---------------- */
 		template <typename Ret, typename... Args>
-		static Ret CallMemFunc(const std::string &name, Args &&... args) {
+		static Ret CallMemFunction(const std::string &name, Args &&... args) {
 			return CallAndRet<Ret, Args...>::Function<Ret, Args...>::CallMemFunc(name, std::forward<Args>(args)...);
 		}
 

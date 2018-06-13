@@ -23,3 +23,9 @@ function Update(ptr)
 	x, y, z = ptr:GetPoint2(2, 3)
 	print("x: " .. x .. ", y: " .. y .. ", z: " .. z)
 end
+
+function Testing2()
+	print("\nTesting2! From [Test1.lua]")
+	print("Testing .. Testing .. Testing")
+	return 10, "Hej"
+end

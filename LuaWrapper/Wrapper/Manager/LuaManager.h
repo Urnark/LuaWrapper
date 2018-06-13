@@ -14,7 +14,7 @@
 
 #define LFW_PRINT_ERROR(error)\
 if (LFW::LuaManager::DEBUG_FLAGS & LFW::ERRORS)\
-	std::cout << "ERROR: " << error << std::endl;
+	std::cout << "ERROR: " << error << "[Line " << __LINE__ <<"]"<< std::endl;
 
 #define LFW_PRINT_DEBUG_TEXT(text, flags)\
 if (LFW::LuaManager::DEBUG_FLAGS & flags)\
@@ -56,6 +56,32 @@ namespace LFW {
 		static void PushFromTuple(std::tuple<Args...>& t) {
 			const auto size = std::tuple_size<std::tuple<Args...>>::value;
 			iteratePushTuple<size - 1, Args...>{}(t);
+		}
+
+		/* For iterating through a tuple and get its values from Lua */
+		template<int index, typename... Args>
+		struct iterateGetTuple {
+			void operator() (std::tuple<Args...> t, std::tuple<Args&...>& tu) {
+				const auto size = std::tuple_size<std::tuple<Args...>>::value;
+				typedef std::remove_reference<decltype(std::get<index>(t))>::type type;
+				std::get<index>(tu) = Get<type>(GetCurrentState());
+				iterateGetTuple<index - 1, Args...>{}(t, tu);
+			}
+		};
+
+		template<typename... Args>
+		struct iterateGetTuple<0, Args...> {
+			void operator() (std::tuple<Args...> t, std::tuple<Args&...>& tu) {
+				const auto size = std::tuple_size<std::tuple<Args...>>::value;
+				typedef std::remove_reference<decltype(std::get<0>(t))>::type type;
+				std::get<0>(tu) = Get<type>(GetCurrentState());
+			}
+		};
+
+		template<typename... Args>
+		static void GetFromTuple(std::tuple<Args...> t, std::tuple<Args&...>& tu) {
+			const auto size = std::tuple_size<std::tuple<Args...>>::value;
+			iterateGetTuple<size - 1, Args...>{}(t, tu);
 		}
 
 		private:
@@ -118,24 +144,24 @@ namespace LFW {
 		template<typename Ret, typename... Args>
 		struct Func {
 			template<typename Ret, typename... Args> struct Function {
-				static Ret CallLuaFunc(const std::string & pFuncName, int r, Args && ... args) {
+				static Ret CallLuaFunction(const std::string & pFuncName, int r, Args && ... args) {
 					const int params = sizeof...(args);
 					lua_getglobal(LuaManager::GetCurrentState(), pFuncName.c_str());
-					Push_all(LuaManager::GetCurrentState(), std::forward<Args>(args)...);
+					PushAll(LuaManager::GetCurrentState(), std::forward<Args>(args)...);
 					if (params == 0)
 						lua_pop(LuaManager::GetCurrentState(), -1);
 					if (r == 0)
 						r = 1;
-					LuaManager::CallLuaFunction(pFuncName, params, r);
+					LuaManager::CallLuaFun(pFuncName, params, r);
 					return Get<Ret>(LuaManager::GetCurrentState());
 				}
 			};
 			template<> struct Function<void, Args...> {
-				static void CallLuaFunc(const std::string & pFuncName, int r, Args&& ... args) {
+				static void CallLuaFunction(const std::string & pFuncName, int r, Args&& ... args) {
 					const int params = sizeof...(args);
 					lua_getglobal(LuaManager::GetCurrentState(), pFuncName.c_str());
-					Push_all(LuaManager::GetCurrentState(), std::forward<Args>(args)...);
-					LuaManager::CallLuaFunction(pFuncName, params, r);
+					PushAll(LuaManager::GetCurrentState(), std::forward<Args>(args)...);
+					LuaManager::CallLuaFun(pFuncName, params, r);
 				}
 			};
 		};
@@ -153,7 +179,7 @@ namespace LFW {
 		}
 	
 		template <typename... Args>
-		static void Push_all(lua_State * L, Args&&... args) {
+		static void PushAll(lua_State * L, Args&&... args) {
 			std::initializer_list<int>{(Push<Args>(L, std::forward<Args>(args)), 0)...};
 		}
 
@@ -163,16 +189,27 @@ namespace LFW {
 			return _get<Ret>(L);
 		}
 
+		template <typename... Rets>
+		static void GetAll(Rets& ... rets) {
+			std::tuple<Rets&...> tu = std::forward_as_tuple(rets...);
+			GetFromTuple(std::tuple<Rets...>(Rets()...), tu);
+		}
+
 		// If the lua function returns more than one values
 		template <typename Ret, typename... Args>
-		static Ret CallLuaFuncS(const std::string & pFuncName, int r, Args&& ... args) {
-			return Func<Ret, Args...>::Function<Ret, Args...>::CallLuaFunc(pFuncName, r, std::forward<Args>(args)...);
+		static Ret CallLuaFunctionS(const std::string & pFuncName, int r, Args&& ... args) {
+			return Func<Ret, Args...>::Function<Ret, Args...>::CallLuaFunction(pFuncName, r, std::forward<Args>(args)...);
+		}
+		// If the lua function returns more than one values
+		template <size_t nrOfRets, typename... Args>
+		static void CallLuaFunctionS(const std::string & pFuncName, Args&& ... args) {
+			return Func<void, Args...>::Function<void, Args...>::CallLuaFunction(pFuncName, nrOfRets, std::forward<Args>(args)...);
 		}
 
 		// If the lua function returns one or none values
 		template <typename Ret, typename... Args>
-		static Ret CallLuaFunc(const std::string & pFuncName, Args&& ... args) {
-			return Func<Ret, Args...>::Function<Ret, Args...>::CallLuaFunc(pFuncName, 0, std::forward<Args>(args)...);
+		static Ret CallLuaFunction(const std::string & pFuncName, Args&& ... args) {
+			return Func<Ret, Args...>::Function<Ret, Args...>::CallLuaFunction(pFuncName, 0, std::forward<Args>(args)...);
 		}
 
 	public:
@@ -263,8 +300,8 @@ namespace LFW {
 		
 		static std::map<std::string, unsigned int> mLuaStateMap;
 	private:
-		static void CallLuaFunction(const std::string & pFuncName);
-		static void CallLuaFunction(const std::string & pFuncName, int pArg, int pResults);
+		static void CallLuaFun(const std::string & pFuncName);
+		static void CallLuaFun(const std::string & pFuncName, int pArg, int pResults);
 	};
 };
 

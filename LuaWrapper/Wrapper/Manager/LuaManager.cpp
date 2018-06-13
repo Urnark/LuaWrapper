@@ -115,16 +115,16 @@ const char * LuaManager::GetFunctionNameFromLua()
 	return ar.name;
 }
 
-void LuaManager::CallLuaFunction(const std::string & pFuncName)
+void LuaManager::CallLuaFun(const std::string & pFuncName)
 {
 	lua_getglobal(GetCurrentState(), pFuncName.c_str());
-	CallLuaFunction(pFuncName, 0, 0);
+	CallLuaFun(pFuncName, 0, 0);
 }
 
-void LuaManager::CallLuaFunction(const std::string & pFuncName, int pArg, int pResults)
+void LuaManager::CallLuaFun(const std::string & pFuncName, int pArg, int pResults)
 {
-	if (pArg == 0 && pResults != 0)
-		lua_getglobal(GetCurrentState(), pFuncName.c_str());
+	//if (pArg == 0 && pResults != 0)
+		//lua_getglobal(GetCurrentState(), pFuncName.c_str());
 	int error = lua_pcall(GetCurrentState(), pArg, pResults, 0);
 	if (error)
 	{

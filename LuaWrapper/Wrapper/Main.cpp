@@ -48,7 +48,7 @@ public:
 	};
 
 	void ConstFunc() const {
-		std::cout << "constFunc: None" << std::endl;
+		std::cout << "constFunc: void ConstFunc() const" << std::endl;
 	};
 
 	static void SFunc() {
@@ -102,14 +102,20 @@ int main()
 
 	// Call lua function
 	LFW::LuaManager::SetState("Init");
-	LFW::LuaManager::CallLuaFunc<void>("HelloWorld");
+	LFW::LuaManager::CallLuaFunction<void>("HelloWorld");
 	
 	ts[0].p.z = 100.0f;
-	LFW::LuaManager::CallLuaFunc<void>("Update", &ts[0]);
-	LFW::LuaManager::CallLuaFunc<void>("Update", &ts[1]);
+	LFW::LuaManager::CallLuaFunction<void>("Update", &ts[0]);
+	LFW::LuaManager::CallLuaFunction<void>("Update", &ts[1]);
+
+	int ret1 = 0;
+	std::string ret2 = "";
+	LFW::LuaManager::CallLuaFunctionS<2>("Testing2");
+	LFW::LuaManager::GetAll(ret1, ret2);
+	std::cout << "Returning: " << ret1 << ", " << ret2 << std::endl;
 
 	LFW::LuaManager::SetState("TestLuaState");
-	LFW::LuaManager::CallLuaFunc<void>("HelloWorld");
+	LFW::LuaManager::CallLuaFunction<void>("HelloWorld");
 
 	std::system("pause");
 
