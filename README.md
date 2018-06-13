@@ -329,11 +329,27 @@ end
 
 <a name="debug-flags"/></a>
 ### Show debug information
-You can show debug information by setting the "DEBUG_FLAGS" variable. The flags that can be used are:
+You can show debug information in the console window by setting the "DEBUG_FLAGS" variable.<br />
+The flags that can be used are:
 - ERRORS
-- DEBUG_PRINTS
 - FUNCTION_CALLS
 - REGISTER_FUNCTIONS
+- DEBUG_PRINTS
+To set a flag you only need to do this in the top of your main function:
+```C++
+void main() {
+  LFW::LuaManager::DEBUG_FLAGS = LFW::ERRORS | LFW::DEBUG_PRINTS | LFW::FUNCTION_CALLS | LFW::REGISTER_FUNCTIONS;
+  // more code
+}
+```
+##### ERRORS
+Display error messages
+##### FUNCTION_CALLS
+Display messages for when a registered function has been called and the called functions information
+##### REGISTER_FUNCTIONS
+Display messages for when a function has been registered and the functions information.
+##### DEBUG_PRINTS
+Display all messages that is not in the other categories.
 
 <a name="license"/></a>
 ### License
