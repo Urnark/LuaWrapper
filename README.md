@@ -10,6 +10,7 @@
      - [Call a Lua function](#call-lua-function)
      - [Register a C++ function as a global function in Lua](#register-global-function)
      - [Register a C++ function as a member function in Lua](#register-member-function)
+     - [Show debug information](#debug-flags)
   2. [License](#license)
 
 <a name="documentation"/></a>
@@ -325,6 +326,14 @@ function UpdateBar(bar)
   print(positiveNr)
 end
 ```
+
+<a name="debug-flags"/></a>
+### Show debug information
+You can show debug information by setting the "DEBUG_FLAGS" variable. The flags that can be used are:
+- ERRORS
+- DEBUG_PRINTS
+- FUNCTION_CALLS
+- REGISTER_FUNCTIONS
 
 <a name="license"/></a>
 ### License
