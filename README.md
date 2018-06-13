@@ -333,6 +333,7 @@ A C++ function can return more than one value to Lua if it is called. It exists 
 LFW_ReturnValues(returnValues);
 ```
 - returnValues = the values that shall be passed to Lua
+
 "LFW_ReturnType" is only a macro that replaces itself with auto. It is used to know if a function only shall be used to return values to Lua.
 
 Example on how to use it:
