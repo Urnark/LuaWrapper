@@ -94,14 +94,123 @@ Now the function "foo()" can only be called from Lua state "Init" and "bar()" ca
 ### Call a Lua function
 To call a Lua function use the function "CallLuaFunction".
 ```C++
+Ret LuaManager::CallLuaFunction<Ret>(luaFunctionName, arguments);
+```
+- luaFunctionName = the name of the function in Lua that shall be called
+- arguments = the arguments that the Lua function take as parameters
+- Ret = what the Lua function returns
 
+Example:
+```C++
+using namespace LFW;
+
+void main() {
+  // Init lua
+  LuaManager::InitLuaManager();
+
+  // Load a Lua script
+  LuaManager::LoadScript("LuaTestScript1.lua");
+  
+  // Call the Lua function "foo"
+  LuaManager::CallLuaFunction<void>("foo", 10);
+  
+  // Call the Lua function "bar"
+  std::string messageFromBar = LuaManager::CallLuaFunction<std::string>("foo");
+  std::cout << messageFromBar << std::endl;
+  
+  // Close Lua
+  LuaManager::CloseLuaManager();
+}
+```
+In the Lua script
+```Lua
+-- LuaTestScript1.lua --
+
+function foo(nr)
+  print("Hello from foo with number: " .. nr)
+end
+
+function bar()
+  return "Hello from bar"
+end
+```
+
+If the Lua function returns more than one value then this is used instead:
+```C++
+void LuaManager::CallLuaFunction<nrOfRet>(luaFunctionName, arguments);
+```
+- luaFunctionName = the name of the function in Lua that shall be called
+- arguments = the arguments that the Lua function take as parameters
+- nrOfRet = the number of return values that the Lua function returns to C++
+And to get the returned values the function "GetAll" is used.
+```C++
+void LuaManager::GetAll(variables);
+```
+- variables = the valriables that shall contain all the returned values
+
+It exists another way to call Lua functions that return more than one values
+```C++
+Ret LuaManager::CallLuaFunction<Ret, nrOfRet>(luaFunctionName, arguments);
+```
+- luaFunctionName = the name of the function in Lua that shall be called
+- arguments = the arguments that the Lua function take as parameters
+- Ret = what the Lua function returns
+- nrOfRet = the number of return values that the Lua function returns to C++, including the Ret
+It works the same as the first but you need to specisy the number of returned values.
+The difference with this function is that you can spacify to return the last returned value from a Lua function before returning the other.
+
+Example:
+```C++
+using namespace LFW;
+
+void main() {
+  // Init lua
+  LuaManager::InitLuaManager();
+
+  // Load a Lua script
+  LuaManager::LoadScript("LuaTestScript1.lua");
+  
+  // Call the Lua function "foo"
+  LuaManager::CallLuaFunction<2>("foo", 10);
+  int ret1;
+  std::string ret2;
+  LuaManager::GetAll(ret1, ret2);
+  std::cout << "Returning: " << ret1 << ", " << ret2 << std::endl;
+  
+  int nr =  LuaManager::CallLuaFunction<int, 2>("bar", 15);
+  if (nr > 0)
+  {
+    std::cout << LuaManager::GetString() << std::endl;
+  }
+  else // Remember to remove the return values from the Lua stack if not used
+    lua_pop(LFW::LuaManager::GetCurrentState(), -1);
+    
+  // Call the Lua function "bar"
+  std::string messageFromBar = LuaManager::CallLuaFunction<std::string>("foo");
+  std::cout << messageFromBar << std::endl;
+  
+  // Close Lua
+  LuaManager::CloseLuaManager();
+}
+```
+In the Lua script
+```Lua
+-- LuaTestScript1.lua --
+
+function foo(nr)
+  return nr, "Hello from foo"
+end
+
+function bar(nr)
+  return "Hello from bar", nr
+end
 ```
 
 <a name="register-global-function"/></a>
 ### Register a C++ function as a global function in Lua
 The function that is used to register c++ function for Lua to use as a global Lua function is "RegisterCFunction".
 ```c++
-bool LuaFunctionsWrapper::RegisterCFunction(functionName, classInstance, function)
+bool LuaFunctionsWrapper::RegisterCFunction(functionName, classInstance, function);
 ```
 - functionName = the name that the function has in Lua
 - classInstance = the class that the function is a member function of
@@ -159,12 +268,12 @@ print(positiveNr)
 ### Register a C++ function as a member function in Lua
 The function that is used to register c++ function for Lua to use as a member fucntion for a c++ class that is passed to Lua is "LFW_RegisterCObjectFunction".
 ```c++
-LFW_RegisterCObjectFunction(classInstance, LFW_function(functionName, function)...)
+LFW_RegisterCObjectFunction(classInstance, LFW_function(functionName, function)...);
 ```
 - classInstance = the class that the function is a member function of
 - LFW_function(functionName, function)... = for all the functions that the class instance shall be able to use.
 ```c++
-LFW_function(functionName, function)
+LFW_function(functionName, function);
 ```
 - functionName = the name that the function has in Lua
 - function = the function that shall be registered
