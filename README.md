@@ -5,7 +5,7 @@
 ### Table of Contents
   1. [Documentation](documentation)
      - [Start and close the LuaWrapper](init-luawrapper)
-     - [Load a Lua script](load-lua-script)
+     - [Load a Lua script](#load-lua-script)
      - [Create and use more Lua states](more-lua-states)
 # [Documentation](#documentation)
 ### [Start and close the LuaWrapper](#init-luawrapper)
@@ -19,8 +19,9 @@ And when done to use the LuaWrapper it is needed to close it. You can do that by
 ```c++
 void LuaManager::CloseLuaManager();
 ```
-
-### [Load a Lua script](#load-lua-script)
+<a name="load-lua-script"/>
+### [Load a Lua script]
+load-lua-script)
 To load a Lua script so it can be used in the program, the function "LoadScript" is used.
 ```c++
 void LuaManager::LoadScript(lua state name, path of lua script);
