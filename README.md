@@ -32,7 +32,7 @@ void LuaManager::LoadScript(lua state name, path of lua script);
 - lua state name = the name of the Lua script that the script shall belong to
 - path of lua script = the path to the Lua script
 
-The first argument is only there to make the code smaller, more about using more Lua states in a program esists [here](more-lua-states).
+The first argument is only there to make the code smaller, more about using more Lua states in a program esists [here](#more-lua-states).
 
 <a name="more-lua-states"/></a>
 ### Create and use more Lua states
