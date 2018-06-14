@@ -88,8 +88,8 @@ int main()
 
 	LFW::LuaFunctionsWrapper::RegisterCFunction("Testing", &ts[0], &Test::Testing);
 
-	LFW::LuaManager::LoadScript("Wrapper/TestScripts/Test1.lua");
-	LFW::LuaManager::LoadScript("TestLuaState", "Wrapper/TestScripts/Test2.lua");
+	LFW::LuaManager::LoadScript("src/Wrapper/TestScripts/Test1.lua");
+	LFW::LuaManager::LoadScript("TestLuaState", "src/Wrapper/TestScripts/Test2.lua");
 
 	LFW::LuaFunctionsWrapper::RegisterCFunction("Testing3", &ts[0], &Test::Testing3);
 	LFW::LuaFunctionsWrapper::RegisterCFunction("ConstFunc", &ts[0], &Test::ConstFunc);

@@ -12,7 +12,7 @@ function HelloWorld()
 	Func()
 	SFunc2();
 	
-	local test = require("Wrapper.TestScripts.LibTest")
+	local test = require("src/Wrapper.TestScripts.LibTest")
 	print("From LibTest.lua: " .. test.testingAdd(1, 5))
 end
 
