@@ -444,6 +444,7 @@ The flags that can be used are:
 - FUNCTION_CALLS
 - REGISTER_FUNCTIONS
 - DEBUG_PRINTS
+
 To set a flag you only need to do this in the top of your main function:
 ```C++
 void main() {
