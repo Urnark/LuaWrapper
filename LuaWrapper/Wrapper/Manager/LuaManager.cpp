@@ -19,7 +19,6 @@ std::vector<lua_State*> LuaManager::mLs;
 std::vector<std::string> LuaManager::mMetaTables;
 unsigned int LuaManager::mCurrentState = 0;
 std::map<std::string, unsigned int> LuaManager::mLuaStateMap;
-
 int LuaManager::DEBUG_FLAGS = 0;
 
 LuaManager::LuaManager()

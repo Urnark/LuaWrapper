@@ -7,10 +7,8 @@
 #include <string>
 #include <iostream>
 #include <vector>
-#include <sstream>
 #include <map>
-
-#include <typeinfo>
+#include <tuple>
 
 #define LFW_PRINT_ERROR(error)\
 if (LFW::LuaManager::DEBUG_FLAGS & LFW::ERRORS)\
