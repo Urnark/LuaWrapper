@@ -10,15 +10,15 @@
 #include <map>
 #include <tuple>
 
-#define LFW_PRINT_ERROR(error)\
-if (LFW::LuaManager::DEBUG_FLAGS & LFW::ERRORS)\
+#define LW_PRINT_ERROR(error)\
+if (lw::LuaManager::DEBUG_FLAGS & lw::ERRORS)\
 	std::cout << "ERROR: " << error << "[Line " << __LINE__ <<"]"<< std::endl;
 
-#define LFW_PRINT_DEBUG_TEXT(text, flags)\
-if (LFW::LuaManager::DEBUG_FLAGS & flags)\
+#define LW_PRINT_DEBUG_TEXT(text, flags)\
+if (lw::LuaManager::DEBUG_FLAGS & flags)\
 	std::cout << text << std::endl;
 
-namespace LFW {
+namespace lw {
 
 	enum FLAGS {
 		ERRORS = 1 << 0,
@@ -118,7 +118,9 @@ namespace LFW {
 
 		template <typename Ret>
 		inline static Ret _get(lua_State * pL) {
-			return 0;
+			if (!std::is_base_of(Ret, ILuaMember))
+				LW_PRINT_ERROR("Argument for [_get] is not a ILuaMember");
+			return LuaManager::GetUserData<Ret>(-lua_gettop(LuaManager::GetCurrentState()));
 		}
 
 		template <>
@@ -303,7 +305,7 @@ namespace LFW {
 };
 
 template<typename T>
-inline T * LFW::LuaManager::GetObjectPtr(const std::string & pObjectName, int pIndex)
+inline T * lw::LuaManager::GetObjectPtr(const std::string & pObjectName, int pIndex)
 {
 	T* objectPtr = nullptr;
 
@@ -315,7 +317,7 @@ inline T * LFW::LuaManager::GetObjectPtr(const std::string & pObjectName, int pI
 }
 
 template<typename T>
-inline T * LFW::LuaManager::GetObjectPtrEmpty(const std::string & pLuaObjectName, const std::string & pObjectName, int pIndex)
+inline T * lw::LuaManager::GetObjectPtrEmpty(const std::string & pLuaObjectName, const std::string & pObjectName, int pIndex)
 {
 	lua_getglobal(GetCurrentState(), pLuaObjectName.c_str());
 	T* ptr = LuaManager::GetObjectPtr<Enemy>(pObjectName.c_str());

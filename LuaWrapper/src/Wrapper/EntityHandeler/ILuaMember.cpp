@@ -1,3 +1,3 @@
 #include "ILuaMember.h"
 
-unsigned int LFW::ILuaMember::freeID = 0;
+unsigned int lw::ILuaMember::freeID = 0;

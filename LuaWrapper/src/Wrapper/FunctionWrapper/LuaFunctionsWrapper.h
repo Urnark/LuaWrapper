@@ -7,38 +7,39 @@
 #include <map>
 #include <iostream>
 
-#define LFW_CALL_ERROR(ret, args, retV)\
+#define LW_CALL_ERROR(ret, args, retV)\
 if (MapHolder<ret, args>::Functions.find(name) == MapHolder<ret, args>::Functions.end())\
 {\
-	LFW_PRINT_ERROR("C Function [" << name << "] is not a registered function")\
+	LW_PRINT_ERROR("C Function [" << name << "] is not a registered function")\
 	return retV;\
 }\
 
-#define LFW_CALL_EXISTS(ret, args)\
+#define LW_CALL_EXISTS(ret, args)\
 if (MapHolder<ret, args>::Functions.find(name) != MapHolder<ret, args>::Functions.end())\
 {\
-	LFW_PRINT_ERROR("C Function [" << name << "] is allready a registered function")\
+	LW_PRINT_ERROR("C Function [" << name << "] is allready a registered function")\
 	return false;\
 }\
 
-#define LFW_WRONG_CLASS(pointer)\
+#define LW_WRONG_CLASS(pointer)\
 ILuaMember* ptr = dynamic_cast<ILuaMember*>(pointer);\
 if (ptr == nullptr) {\
-	LFW_PRINT_ERROR("wrong class in [" << __func__ << "]")\
+	LW_PRINT_ERROR("wrong class in [" << __func__ << "]")\
 	return false;\
 }\
 
-#define LFW_CALL_RET_ERROR(ret, args) LFW_CALL_ERROR(ret, args, ret())
+#define LW_CALL_RET_ERROR(ret, args) LW_CALL_ERROR(ret, args, ret())
 
-#define LFW_RegisterCObjectFunctions(obj, ...)\
-decltype(obj) LFW__obj = obj;\
+#define LW_RegisterCObjectFunctions(obj, ...)\
+decltype(obj) LW__obj = obj;\
 luaL_Reg mFuncList[] = { __VA_ARGS__, { NULL, NULL } };\
-LFW::LuaFunctionsWrapper::RegisterCObject(&##obj, mFuncList);
+lw::LuaFunctionsWrapper::RegisterCObject(&##obj, mFuncList);
 
-#define LFW_function(name, function) { ##name, LFW::LuaFunctionsWrapper::GetRegisterFunction(##name, &LFW__obj, &##function) }
-#define LFW_ReturnValues(...) LFW::LuaFunctionsWrapper::ReturnValuesToLua(__VA_ARGS__)
-#define LFW_ReturnType auto
-#define LFW_SetReturnValues(...) returnValues = std::make_tuple(__VA_ARGS__)
+#define LW_function(name, function) { ##name, lw::LuaFunctionsWrapper::GetRegisterFunction(##name, &LW__obj, &##function) }
+#define LW_function2(name, obj, function) { ##name, lw::LuaFunctionsWrapper::GetRegisterFunction(##name, &##obj, &##function) }
+#define LW_ReturnValues(...) lw::LuaFunctionsWrapper::ReturnValuesToLua(__VA_ARGS__)
+#define LW_ReturnType auto
+#define LW_SetReturnValues(...) returnValues = std::make_tuple(__VA_ARGS__)
 
 
 template<int N>
@@ -52,7 +53,7 @@ namespace std {
 	struct std::is_placeholder<::my_placeholder<N>> : std::integral_constant<int, N> { };
 }
 
-namespace LFW {
+namespace lw {
 	class LuaFunctionsWrapper
 	{
 	private:
@@ -78,15 +79,15 @@ namespace LFW {
 		struct CallAndRet {
 			template<typename Ret, typename... Args> struct Function {
 				static Ret CallMemFunc(const std::string &name, Args &&... args) {
-					LFW_CALL_RET_ERROR(Ret, Args...)
-					LFW_PRINT_DEBUG_TEXT("Called C function [" << name << "]", LFW::FUNCTION_CALLS)
+					LW_CALL_RET_ERROR(Ret, Args...)
+					LW_PRINT_DEBUG_TEXT("Called C function [" << name << "]", FUNCTION_CALLS)
 					return MapHolder<Ret, Args...>::Functions[name](std::forward<Args>(args)...);
 				}
 			};
 			template<> struct Function<void, Args...> {
 				static void CallMemFunc(const std::string &name, Args &&... args) {
-					LFW_CALL_RET_ERROR(void, Args...)
-					LFW_PRINT_DEBUG_TEXT("Called C function [" << name << "]", LFW::FUNCTION_CALLS)
+					LW_CALL_RET_ERROR(void, Args...)
+					LW_PRINT_DEBUG_TEXT("Called C function [" << name << "]", FUNCTION_CALLS)
 					MapHolder<void, Args...>::Functions[name](std::forward<Args>(args)...);
 				}
 			};
@@ -157,12 +158,12 @@ namespace LFW {
 			const int params = sizeof...(Args);
 			ILuaMember* luaMember = dynamic_cast<ILuaMember*>(pClass);
 			name = LuaFunctionsWrapper::GenerateFuncName(name, pClass);
-			LFW_CALL_EXISTS(Ret, Args...)
+			LW_CALL_EXISTS(Ret, Args...)
 			if (!luaMember) {
-				LFW_PRINT_ERROR("Class of C function [" << name << "] is not a Lua member")
+				LW_PRINT_ERROR("Class of C function [" << name << "] is not a Lua member")
 				return false;
 			}
-			LFW_PRINT_DEBUG_TEXT("Register C function [" << name << "] with [" << params << "] arguments", LFW::REGISTER_FUNCTIONS)
+			LW_PRINT_DEBUG_TEXT("Register C function [" << name << "] with [" << params << "] arguments", REGISTER_FUNCTIONS)
 			return true;
 		}
 
@@ -187,8 +188,8 @@ namespace LFW {
 		static bool RegisterCallerStatic(std::string name, Ret(*Callback)(Args...), std::integer_sequence<int, Is...>) {
 			const int params = sizeof...(Args);
 			name = LuaFunctionsWrapper::GenerateFuncName(name, nullptr);
-			LFW_CALL_EXISTS(Ret, Args...)
-			LFW_PRINT_DEBUG_TEXT("Register a static C function [" << name << "] with [" << params << "] arguments", LFW::REGISTER_FUNCTIONS)
+			LW_CALL_EXISTS(Ret, Args...)
+			LW_PRINT_DEBUG_TEXT("Register a static C function [" << name << "] with [" << params << "] arguments", REGISTER_FUNCTIONS)
 			MapHolder<Ret, Args...>::Functions[name] = std::bind(Callback, my_placeholder<Is + 1>::ph...);
 			return true;
 		}
@@ -207,7 +208,7 @@ namespace LFW {
 		/* --------------- Register a member function ---------------- */
 		template<typename Ret, typename Clazz, typename ...Args>
 		static bool RegisterCFunction(std::string name, Clazz* pClass, Ret(Clazz::*Callback)(Args...)) {
-			LFW_WRONG_CLASS(pClass);
+			LW_WRONG_CLASS(pClass);
 			bool retur = LuaFunctionsWrapper::RegisterCaller(name, pClass, Callback, std::make_integer_sequence<int, sizeof...(Args)>());
 			LuaFunctionsWrapper::AddCFunction<Ret, Args...>(pClass, name);
 			return retur;
@@ -216,7 +217,7 @@ namespace LFW {
 		/* --------------- Register a const member function ---------------- */
 		template<typename Ret, typename Clazz, typename ...Args>
 		static bool RegisterCFunction(std::string name, Clazz* pClass, Ret(Clazz::*Callback)(Args...) const) {
-			LFW_WRONG_CLASS(pClass);
+			LW_WRONG_CLASS(pClass);
 			bool retur = LuaFunctionsWrapper::RegisterCaller(name, pClass, Callback, std::make_integer_sequence<int, sizeof...(Args)>());
 			LuaFunctionsWrapper::AddCFunction<Ret, Args...>(pClass, name);
 			return retur;
@@ -270,4 +271,4 @@ namespace LFW {
 	};
 };
 template <typename Ret, typename... Args>
-std::map<std::string, std::function<Ret(Args...)>> LFW::LuaFunctionsWrapper::MapHolder<Ret, Args...>::Functions;
+std::map<std::string, std::function<Ret(Args...)>> lw::LuaFunctionsWrapper::MapHolder<Ret, Args...>::Functions;

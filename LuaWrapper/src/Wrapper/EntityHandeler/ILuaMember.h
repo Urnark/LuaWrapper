@@ -3,7 +3,7 @@
 #include <string>
 #include <tuple>
 
-namespace LFW {
+namespace lw {
 
 	class ILuaMember
 	{

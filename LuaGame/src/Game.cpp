@@ -1,34 +1,42 @@
-#include <Wrapper\FunctionWrapper\LuaFunctionsWrapper.h>
+#include <SFML\Graphics.hpp>
+#include <Wrapper\Manager\LuaManager.h>
+
+#include "core\logic-manager\LogicManager.h"
+#include "GameDef.h"
 
 #include <iostream>
 
-void foo() {
-	std::cout << "Hello from function foo" << std::endl;
-};
-
-using namespace LFW;
+// In LuaWrapper
+// TODO: clean code, use _get to give Lua an instance of a ILuaMember
 
 int main()
 {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	//_CrtSetBreakAlloc(1062);
 
-	LuaManager::DEBUG_FLAGS = LFW::ERRORS;
-	LuaManager::InitLuaManager();
+	sf::ContextSettings settings;
+	settings.antialiasingLevel = 8;
+	sf::RenderWindow window(sf::VideoMode(WORLD_WIDTH, WORLD_HEIGHT), "Lua Test Game!", sf::Style::Default, settings);
 
-	LuaManager::LoadScript("src/logic/Test.lua");
+	LogicManager logicManager;
 
-	LuaFunctionsWrapper::RegisterCFunction("foo", &foo);
+	while (window.isOpen())
+	{
+		sf::Event event;
+		while (window.pollEvent(event))
+		{
+			if (event.type == sf::Event::Closed)
+				window.close();
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+				window.close();
+		}
 
-	LuaManager::CallLuaFunction<3>("Update");
-	int ret1;
-	float ret2;
-	std::string ret3;
-	LuaManager::GetAll(ret1, ret2, ret3);
-	std::cout << "foo returning: " << ret1 << ", " << ret2 << ", " << ret3 << std::endl;
+		window.clear();
 
-	std::system("pause");
+		logicManager.Update(window);
 
-	LuaManager::CloseLuaManager();
+		window.display();
+	}
+
 	return 0;
 }

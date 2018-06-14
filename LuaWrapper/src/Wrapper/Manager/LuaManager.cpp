@@ -1,7 +1,7 @@
 #include "LuaManager.h"
 
 // PE = Print Error
-#define PE_LUA_TOP(type) LFW_PRINT_ERROR("not a " << typeid(type).name() << " on top of the stack [" << __func__ << "]")
+#define PE_LUA_TOP(type) LW_PRINT_ERROR("not a " << typeid(type).name() << " on top of the stack [" << __func__ << "]")
 
 #define LUA_GETTOP_I(var, L, i){\
 	if (!lua_is##var(L, i))\
@@ -13,7 +13,7 @@
 
 #define LUA_GETTOP(var, L) LUA_GETTOP_I(var, L, -1)
 
-namespace LFW {
+namespace lw {
 
 std::vector<lua_State*> LuaManager::mLs;
 std::vector<std::string> LuaManager::mMetaTables;
@@ -51,7 +51,7 @@ void LuaManager::UseLuaState(unsigned int pLuaStateIndex)
 	if (pLuaStateIndex >= 0 && pLuaStateIndex < mLs.size())
 		mCurrentState = pLuaStateIndex;
 	else
-		LFW_PRINT_ERROR("Index[" << pLuaStateIndex << "] out of bounds for the lua state")
+		LW_PRINT_ERROR("Index[" << pLuaStateIndex << "] out of bounds for the lua state")
 }
 
 void LuaManager::UseLuaState(const std::string & pLuaStateName)
@@ -59,7 +59,7 @@ void LuaManager::UseLuaState(const std::string & pLuaStateName)
 	if (mLuaStateMap.find(pLuaStateName) != mLuaStateMap.end())
 		mCurrentState = mLuaStateMap[pLuaStateName];
 	else
-		LFW_PRINT_ERROR("The Lua state [" << pLuaStateName << "] do not exist in the LuaManager")
+		LW_PRINT_ERROR("The Lua state [" << pLuaStateName << "] do not exist in the LuaManager")
 }
 
 void LuaManager::CreateLuaState(const std::string & pLuaStateName)
@@ -74,13 +74,13 @@ void LuaManager::LoadScript(const std::string & pPath)
 	int error = luaL_loadfile(GetCurrentState(), pPath.c_str()) || lua_pcall(GetCurrentState(), 0, 0, 0);
 	if (error)
 	{
-		LFW_PRINT_ERROR("could not load lua script [" << pPath << "]")
+		LW_PRINT_ERROR("could not load lua script [" << pPath << "]")
 		lua_pop(GetCurrentState(), 1);
 		PrintStackSize();
 	}
 	else
 	{
-		LFW_PRINT_DEBUG_TEXT("[" << pPath << "] Script loaded successfully", LFW::DEBUG_PRINTS)
+		LW_PRINT_DEBUG_TEXT("[" << pPath << "] Script loaded successfully", DEBUG_PRINTS)
 	}
 }
 
@@ -127,7 +127,7 @@ void LuaManager::CallLuaFun(const std::string & pFuncName, int pArg, int pResult
 	int error = lua_pcall(GetCurrentState(), pArg, pResults, 0);
 	if (error)
 	{
-		LFW_PRINT_ERROR("could not call function: [" << pFuncName << "]")
+		LW_PRINT_ERROR("could not call function: [" << pFuncName << "]")
 		lua_pop(GetCurrentState(), 1);
 		PrintStackSize();
 	}
@@ -293,7 +293,7 @@ void LuaManager::RegisterObjectFunctions(const std::string & pObjectName, luaL_R
 {
 	std::string metatable = "Meta" + pObjectName;
 	if (luaL_newmetatable(GetCurrentState(), metatable.c_str()) == 0) {
-		LFW_PRINT_ERROR("metatable with name [" << metatable << "] already exists")
+		LW_PRINT_ERROR("metatable with name [" << metatable << "] already exists")
 	}
 	else
 	{
@@ -312,7 +312,7 @@ void LuaManager::RegisterObjectFunctions(const std::string & pObjectName, luaL_R
 
 void LuaManager::PrintStackSize()
 {
-	LFW_PRINT_DEBUG_TEXT("Size of Lua stack: " << StackSize(), LFW::DEBUG_PRINTS)
+	LW_PRINT_DEBUG_TEXT("Size of Lua stack: " << StackSize(), DEBUG_PRINTS)
 }
 
 int LuaManager::StackSize()
