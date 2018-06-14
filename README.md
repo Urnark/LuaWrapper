@@ -1,6 +1,7 @@
 
 # LuaWrapper
 #### This project is not done. The code might change
+#### The LuaGame folder is a test game that uses the LuaWrapper to test all the function of the LuaWrapper
 
 ### Table of Contents
   1. [Documentation](#documentation)
