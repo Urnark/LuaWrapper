@@ -9,6 +9,8 @@
      - [Load a Lua script](#load-lua-script)
      - [Create and use more Lua states](#more-lua-states)
      - [Call a Lua function](#call-lua-function)
+       - [Lua function returning one value](#call-lua-function2one)
+       - [Lua function returning more than one values](#call-lua-function2more)
      - [Register a C++ function as a global function in Lua](#register-global-function)
      - [Register a C++ function as a member function in Lua](#register-member-function)
      - [C++ function returning more than one values to Lua](#return-more-values)
@@ -95,6 +97,8 @@ Now the function "foo()" can only be called from Lua state "Init" and "bar()" ca
 
 <a name="call-lua-function"/></a>
 ### Call a Lua function
+<a name="call-lua-function2one"/></a>
+#### Lua function returning one value
 To call a Lua function use the function "CallLuaFunction".
 ```C++
 Ret LuaManager::CallLuaFunction<Ret>(luaFunctionName, arguments);
@@ -138,6 +142,8 @@ function bar()
 end
 ```
 
+<a name="call-lua-function2more"/></a>
+#### Lua function returning more than one values
 If the Lua function returns more than one value then this is used instead:
 ```C++
 void LuaManager::CallLuaFunction<nrOfRet>(luaFunctionName, arguments);
