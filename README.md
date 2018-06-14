@@ -98,7 +98,7 @@ Now the function "foo()" can only be called from Lua state "Init" and "bar()" ca
 <a name="call-lua-function"/></a>
 ### Call a Lua function
 <a name="call-lua-function2one"/></a>
-#### Lua function returning one value
+#### **Lua function returning one value**
 To call a Lua function use the function "CallLuaFunction".
 ```C++
 Ret LuaManager::CallLuaFunction<Ret>(luaFunctionName, arguments);
@@ -143,7 +143,7 @@ end
 ```
 
 <a name="call-lua-function2more"/></a>
-#### Lua function returning more than one values
+#### **Lua function returning more than one values**
 If the Lua function returns more than one value then this is used instead:
 ```C++
 void LuaManager::CallLuaFunction<nrOfRet>(luaFunctionName, arguments);
