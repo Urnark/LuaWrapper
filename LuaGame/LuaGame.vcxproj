@@ -18,102 +18,34 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="src\Lua\lapi.c" />
-    <ClCompile Include="src\Lua\lauxlib.c" />
-    <ClCompile Include="src\Lua\lbaselib.c" />
-    <ClCompile Include="src\Lua\lbitlib.c" />
-    <ClCompile Include="src\Lua\lcode.c" />
-    <ClCompile Include="src\Lua\lcorolib.c" />
-    <ClCompile Include="src\Lua\lctype.c" />
-    <ClCompile Include="src\Lua\ldblib.c" />
-    <ClCompile Include="src\Lua\ldebug.c" />
-    <ClCompile Include="src\Lua\ldo.c" />
-    <ClCompile Include="src\Lua\ldump.c" />
-    <ClCompile Include="src\Lua\lfunc.c" />
-    <ClCompile Include="src\Lua\lgc.c" />
-    <ClCompile Include="src\Lua\linit.c" />
-    <ClCompile Include="src\Lua\liolib.c" />
-    <ClCompile Include="src\Lua\llex.c" />
-    <ClCompile Include="src\Lua\lmathlib.c" />
-    <ClCompile Include="src\Lua\lmem.c" />
-    <ClCompile Include="src\Lua\loadlib.c" />
-    <ClCompile Include="src\Lua\lobject.c" />
-    <ClCompile Include="src\Lua\lopcodes.c" />
-    <ClCompile Include="src\Lua\loslib.c" />
-    <ClCompile Include="src\Lua\lparser.c" />
-    <ClCompile Include="src\Lua\lstate.c" />
-    <ClCompile Include="src\Lua\lstring.c" />
-    <ClCompile Include="src\Lua\lstrlib.c" />
-    <ClCompile Include="src\Lua\ltable.c" />
-    <ClCompile Include="src\Lua\ltablib.c" />
-    <ClCompile Include="src\Lua\ltm.c" />
-    <ClCompile Include="src\Lua\lundump.c" />
-    <ClCompile Include="src\Lua\lutf8lib.c" />
-    <ClCompile Include="src\Lua\lvm.c" />
-    <ClCompile Include="src\Lua\lzio.c" />
-    <ClCompile Include="src\Wrapper\EntityHandeler\ILuaMember.cpp" />
-    <ClCompile Include="src\Wrapper\Manager\LuaManager.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="src\Lua\lapi.h" />
-    <ClInclude Include="src\Lua\lauxlib.h" />
-    <ClInclude Include="src\Lua\lcode.h" />
-    <ClInclude Include="src\Lua\lctype.h" />
-    <ClInclude Include="src\Lua\ldebug.h" />
-    <ClInclude Include="src\Lua\ldo.h" />
-    <ClInclude Include="src\Lua\lfunc.h" />
-    <ClInclude Include="src\Lua\lgc.h" />
-    <ClInclude Include="src\Lua\llex.h" />
-    <ClInclude Include="src\Lua\llimits.h" />
-    <ClInclude Include="src\Lua\lmem.h" />
-    <ClInclude Include="src\Lua\lobject.h" />
-    <ClInclude Include="src\Lua\lopcodes.h" />
-    <ClInclude Include="src\Lua\lparser.h" />
-    <ClInclude Include="src\Lua\lprefix.h" />
-    <ClInclude Include="src\Lua\lstate.h" />
-    <ClInclude Include="src\Lua\lstring.h" />
-    <ClInclude Include="src\Lua\ltable.h" />
-    <ClInclude Include="src\Lua\ltm.h" />
-    <ClInclude Include="src\Lua\lua.h" />
-    <ClInclude Include="src\Lua\lua.hpp" />
-    <ClInclude Include="src\Lua\luaconf.h" />
-    <ClInclude Include="src\Lua\lualib.h" />
-    <ClInclude Include="src\Lua\lundump.h" />
-    <ClInclude Include="src\Lua\lvm.h" />
-    <ClInclude Include="src\Lua\lzio.h" />
-    <ClInclude Include="src\Wrapper\EntityHandeler\ILuaMember.h" />
-    <ClInclude Include="src\Wrapper\FunctionWrapper\LuaFunctionsWrapper.h" />
-    <ClInclude Include="src\Wrapper\Manager\LuaManager.h" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{BA6E6B79-0C82-491A-8D04-9D70055EBB7E}</ProjectGuid>
-    <RootNamespace>LuaWrapper</RootNamespace>
+    <ProjectGuid>{A4579F30-7546-4B51-88A9-E8CA5A42D9FD}</ProjectGuid>
+    <RootNamespace>LuaGame</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -144,6 +76,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)LuaWrapper\src;</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -152,6 +85,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)LuaWrapper\src;</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -162,6 +96,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)LuaWrapper\src;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -176,12 +111,24 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)LuaWrapper\src;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Game.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\LuaWrapper\LuaWrapper.vcxproj">
+      <Project>{ba6e6b79-0c82-491a-8d04-9d70055ebb7e}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="src\logic\test.lua" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
