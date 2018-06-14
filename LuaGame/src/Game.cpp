@@ -13,14 +13,19 @@ int main()
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	//_CrtSetBreakAlloc(1062);
 
-	LuaManager::DEBUG_FLAGS = LFW::ERRORS | LFW::DEBUG_PRINTS | LFW::FUNCTION_CALLS | LFW::REGISTER_FUNCTIONS;
+	LuaManager::DEBUG_FLAGS = LFW::ERRORS;
 	LuaManager::InitLuaManager();
 
 	LuaManager::LoadScript("src/logic/Test.lua");
 
 	LuaFunctionsWrapper::RegisterCFunction("foo", &foo);
 
-	LuaManager::CallLuaFunction<void>("Update");
+	LuaManager::CallLuaFunction<3>("Update");
+	int ret1;
+	float ret2;
+	std::string ret3;
+	LuaManager::GetAll(ret1, ret2, ret3);
+	std::cout << "foo returning: " << ret1 << ", " << ret2 << ", " << ret3 << std::endl;
 
 	std::system("pause");
 
