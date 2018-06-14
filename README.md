@@ -105,7 +105,7 @@ Ret LuaManager::CallLuaFunction<Ret>(luaFunctionName, arguments);
 
 Example:
 ```C++
-using namespace LFW;
+using namespace lw;
 
 void main() {
   // Init lua
@@ -164,7 +164,7 @@ The difference with this function is that you can spacify to return the last ret
 
 Example:
 ```C++
-using namespace LFW;
+using namespace lw;
 
 void main() {
   // Init lua
@@ -186,7 +186,7 @@ void main() {
     std::cout << LuaManager::GetString() << std::endl;
   }
   else // Remember to remove the return values from the Lua stack if not used
-    lua_pop(LFW::LuaManager::GetCurrentState(), -1);
+    lua_pop(LuaManager::GetCurrentState(), -1);
     
   // Call the Lua function "bar"
   std::string messageFromBar = LuaManager::CallLuaFunction<std::string>("foo");
@@ -305,7 +305,7 @@ void main() {
   LuaManager::InitLuaManager();
   
   Bar bar;
-  LFW_RegisterCObjectFunctions(bar,
+  LW_RegisterCObjectFunctions(bar,
     LW_function("IsPositive", Bar::IsPositive), 
     LW_function("Print", Bar::Print)
   );
@@ -350,7 +350,7 @@ LW_ReturnValues(returnValues);
 ```
 - returnValues = the values that shall be passed to Lua
 
-"LFW_ReturnType" is only a macro that replaces itself with auto. It is used to know if a function only shall be used to return values to Lua. Can only be used if the function is declared in the same place that it is defined. If that is not the case then use this:
+"LW_ReturnType" is only a macro that replaces itself with auto. It is used to know if a function only shall be used to return values to Lua. Can only be used if the function is declared in the same place that it is defined. If that is not the case then use this:
 ```C++
 RetValuesToLua<returnTypes>
 ```
