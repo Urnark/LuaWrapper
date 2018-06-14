@@ -19,7 +19,7 @@
 # Documentation
 <a name="init-luawrapper"/></a>
 ### Start and close the LuaWrapper
-Every function in the LuaWrapper is in the namespace LFW (Lua Function Wrapper).
+Every function in the LuaWrapper is in the namespace lw (Lua Wrapper).
 To use the LuaWrapper it is needed to initialize the wrapper. You can do that by calling the function "InitLuaManager".
 ```c++
 void LuaManager::InitLuaManager(lua state name);
@@ -270,14 +270,14 @@ print(positiveNr)
 
 <a name="register-member-function"/></a>
 ### Register a C++ function as a member function in Lua
-The function that is used to register c++ function for Lua to use as a member fucntion for a c++ class that is passed to Lua is "LFW_RegisterCObjectFunctions".
+The function that is used to register c++ function for Lua to use as a member fucntion for a c++ class that is passed to Lua is "LW_RegisterCObjectFunctions".
 ```c++
-LFW_RegisterCObjectFunctions(classInstance, LFW_function(functionName, function)...);
+LW_RegisterCObjectFunctions(classInstance, LW_function(functionName, function)...);
 ```
 - classInstance = the class that the function is a member function of
-- LFW_function(functionName, function)... = for all the functions that the class instance shall be able to use.
+- LW_function(functionName, function)... = for all the functions that the class instance shall be able to use.
 ```c++
-LFW_function(functionName, function);
+LW_function(functionName, function);
 ```
 - functionName = the name that the function has in Lua
 - function = the function that shall be registered
@@ -296,21 +296,32 @@ public:
   }
 }
 
+class Foo : public Bar
+{
+}
+
 void main() {
   // Init lua
   LuaManager::InitLuaManager();
   
   Bar bar;
   LFW_RegisterCObjectFunctions(bar,
-    LFW_function("IsPositive", Test::IsPositive), 
-    LFW_function("Print", Test::Print)
+    LW_function("IsPositive", Bar::IsPositive), 
+    LW_function("Print", Bar::Print)
+  );
+  
+  // If the functions that the class instance shall be able to call is in the base class Bar that inherit from ILuaMember
+  Foo foo;
+  LW_RegisterCObjectFunctions(foo,
+    LW_function2("IsPositive", (Bar)foo, Foo::IsPositive), 
+    LW_function2("Print", (Bar)foo, Foo::Print)
   );
   
   // Load a Lua script
   LuaManager::LoadScript("LuaTestScript1.lua");
   
   // Call the Lua function that shall be used and pass the class instance as a parameter to it
-  LuaManager::CallLuaFunction<void>("UpdateBar", &bar);
+  LuaManager::CallLuaFunction<void>("UpdateBar", &bar, &foo);
   
   // Close Lua
   LuaManager::CloseLuaManager();
@@ -320,28 +331,36 @@ And in the Lua script file:
 ```Lua
 -- LuaTestScript1.lua --
 
-function UpdateBar(bar)
+function UpdateBar(bar, foo)
   bar:Print()
   positiveNr = bar:IsPositive(34)
+  print(positiveNr)
+  
+  foo:Print()
+  positiveNr = foo:IsPositive(0)
   print(positiveNr)
 end
 ```
 
 <a name="return-more-values"/></a>
 ### C++ function returning more than one values to Lua
-A C++ function can return more than one value to Lua if it is called. It exists two ways to do that, the first is to use the macro "LFW_ReturnValues" and "LFW_ReturnType".
+A C++ function can return more than one value to Lua if it is called. It exists two ways to do that, the first is to use the macro "LW_ReturnValues" and "LW_ReturnType".
 ```C++
-LFW_ReturnValues(returnValues);
+LW_ReturnValues(returnValues);
 ```
 - returnValues = the values that shall be passed to Lua
 
-"LFW_ReturnType" is only a macro that replaces itself with auto. It is used to know if a function only shall be used to return values to Lua.
+"LFW_ReturnType" is only a macro that replaces itself with auto. It is used to know if a function only shall be used to return values to Lua. Can only be used if the function is declared in the same place that it is defined. If that is not the case then use this:
+```C++
+RetValuesToLua<returnTypes>
+```
+- returnTypes = the types of the values that shall be passed to Lua
 
 Example on how to use it:
 ```c++
-LFW_ReturnType foo(int nr) {
+LW_ReturnType foo(int nr) { // or in this case: RetValuesToLua<int, int> foo(int nr)
   std::cout << "Called function foo with number: " << nr << std::endl;
-  return LFW_ReturnValues(nr, 30);
+  return LW_ReturnValues(nr, 30);
 }
 
 void main() {
@@ -378,13 +397,13 @@ struct Bar : ReturnToLua<int, std::string>
 	std::string b;
 	// Need to set which variables that shall be returned
 	void SetReturnVariables() {
-		LFW_SetReturnValues(a, b);
+		LW_SetReturnValues(a, b);
 	};
 };
 ```
-Here we see that "ReturnToLua" need to know which type of variables that it need to return. That is why it is needed to write the types in the <>. It need also know which variables that it shall return the values of, it is done by defining the virtual function "SetReturnVariables" and use the macro "LFW_SetReturnValues".
+Here we see that "ReturnToLua" need to know which type of variables that it need to return. That is why it is needed to write the types in the <>. It need also know which variables that it shall return the values of, it is done by defining the virtual function "SetReturnVariables" and use the macro "LW_SetReturnValues".
 ```C++
-LFW_SetReturnValues(returnValues);
+LW_SetReturnValues(returnValues);
 ```
 - returnValues = the values that shall be passed to Lua
 
@@ -396,7 +415,7 @@ struct Bar : ReturnToLua<int, std::string>
 	std::string b;
 	// Need to set which variables that shall be returned
 	void SetReturnVariables() {
-		LFW_SetReturnValues(a, b);
+		LW_SetReturnValues(a, b);
 	};
 };
 
@@ -448,7 +467,7 @@ The flags that can be used are:
 To set a flag you only need to do this in the top of your main function:
 ```C++
 void main() {
-  LuaManager::DEBUG_FLAGS = LFW::ERRORS | LFW::DEBUG_PRINTS | LFW::FUNCTION_CALLS | LFW::REGISTER_FUNCTIONS;
+  LuaManager::DEBUG_FLAGS = lw::ERRORS | lw::DEBUG_PRINTS | lw::FUNCTION_CALLS | lw::REGISTER_FUNCTIONS;
   // more code
 }
 ```
