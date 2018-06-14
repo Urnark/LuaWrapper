@@ -463,4 +463,4 @@ Display all messages that is not in the other categories.
 ### License
 [MIT](LICENSE.md)<br />
 [![alt text](https://www.lua.org/images/lua-language.gif)](http://www.lua.org/)<br />
-[Lua License](LuaWrapper/Lua/LuaLICENSE.txt)
+[Lua License](LuaWrapper/src/Lua/LuaLICENSE.txt)
