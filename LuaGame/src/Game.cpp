@@ -7,7 +7,7 @@
 #include <iostream>
 
 // In LuaWrapper
-// TODO: clean code
+// TODO: on Github
 
 int main()
 {
