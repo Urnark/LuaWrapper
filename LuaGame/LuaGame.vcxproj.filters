@@ -30,6 +30,9 @@
     <ClCompile Include="src\core\entities\entity-manager\EntityManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\core\utils\Keyboard.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\core\logic-manager\LogicManager.h">
@@ -47,9 +50,13 @@
     <ClInclude Include="src\core\entities\entity-manager\EntityManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\core\utils\Keyboard.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\scripts\logic\test.lua" />
     <None Include="src\scripts\init\init.lua" />
+    <None Include="src\scripts\utils\keyboard.lua" />
   </ItemGroup>
 </Project>

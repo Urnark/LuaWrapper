@@ -2,8 +2,32 @@
 
 print("Hello from Test.lua!!")
 
-function Update(player)
-	player:Print()
+-- get keyboard inputs
+local keyboard = require("utils/keyboard")
+
+function Update(dt)
+	player = GetPlayer()
+
 	x, y = player:GetPosition()
-	print("Player is on the position: (" .. x .. ": " .. y .. ")")
+	
+	-- Left
+	if (IsKeyPressed(keyboard.A) == true) then
+		x = x - dt * player:GetSpeed()
+	end
+	-- Right
+	if (IsKeyPressed(keyboard.D)) then
+		x = x + dt * player:GetSpeed()
+	end
+	-- Up
+	if (IsKeyPressed(keyboard.W)) then
+		y = y - dt * player:GetSpeed()
+	end
+	-- Down
+	if (IsKeyPressed(keyboard.S)) then
+		y = y + dt * player:GetSpeed()
+	end
+
+	player:SetPosition(x, y)
+
+	return player
 end

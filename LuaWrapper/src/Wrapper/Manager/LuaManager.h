@@ -118,9 +118,12 @@ namespace lw {
 
 		template <typename Ret>
 		inline static Ret _get(lua_State * pL) {
-			if (!std::is_base_of(Ret, ILuaMember))
+			if (!std::is_base_of<ILuaMember, std::remove_pointer<Ret>::type>::value)
 				LW_PRINT_ERROR("Argument for [_get] is not a ILuaMember");
-			return LuaManager::GetUserData<Ret>(-lua_gettop(LuaManager::GetCurrentState()));
+			if constexpr (std::is_pointer<Ret>::value)
+				return LuaManager::GetUserData<std::remove_pointer<Ret>::type>();
+			else
+				return *LuaManager::GetUserData<std::remove_pointer<Ret>::type>();
 		}
 
 		template <>
@@ -146,7 +149,7 @@ namespace lw {
 				static Ret CallLuaFunction(const std::string & pFuncName, int r, Args && ... args) {
 					const int params = sizeof...(args);
 					lua_getglobal(LuaManager::GetCurrentState(), pFuncName.c_str());
-					PushAll(LuaManager::GetCurrentState(), std::forward<Args>(args)...);
+					PushAll(std::forward<Args>(args)...);
 					//if (params == 0)
 					//	lua_pop(LuaManager::GetCurrentState(), -1);
 					if (r == 0)
@@ -159,7 +162,7 @@ namespace lw {
 				static void CallLuaFunction(const std::string & pFuncName, int r, Args&& ... args) {
 					const int params = sizeof...(args);
 					lua_getglobal(LuaManager::GetCurrentState(), pFuncName.c_str());
-					PushAll(LuaManager::GetCurrentState(), std::forward<Args>(args)...);
+					PushAll(std::forward<Args>(args)...);
 					LuaManager::CallLuaFun(pFuncName, params, r);
 				}
 			};
@@ -168,18 +171,13 @@ namespace lw {
 	public:
 		// Push values to lua
 		template <typename Arg>
-		static void Push(lua_State * L, Arg&& arg) {
-			//return _push<Arg>(L, std::forward<Arg>(arg));
-			return _push(L, std::forward<Arg>(arg));
-		}
-		template <typename Arg>
 		static void Push(Arg&& arg) {
 			return _push(LuaManager::GetCurrentState(), std::forward<Arg>(arg));
 		}
 	
 		template <typename... Args>
-		static void PushAll(lua_State * L, Args&&... args) {
-			std::initializer_list<int>{(Push<Args>(L, std::forward<Args>(args)), 0)...};
+		static void PushAll(Args&&... args) {
+			std::initializer_list<int>{(Push<Args>(std::forward<Args>(args)), 0)...};
 		}
 
 		// Get values from lua
@@ -188,6 +186,10 @@ namespace lw {
 			return _get<Ret>(L);
 		}
 
+		/// <summary>
+		/// Return values from Lua and places them in the variables that it takes as arguments 
+		/// <param name="rets"> the variables that shall hold the returned values </param>
+		/// </summary> 
 		template <typename... Rets>
 		static void GetAll(Rets& ... rets) {
 			std::tuple<Rets&...> tu = std::forward_as_tuple(rets...);
@@ -228,6 +230,8 @@ namespace lw {
 		static lua_State * GetCurrentState();
 		static unsigned int GetCurrentStateIndex();
 
+		static void SetLuaBasePath(const std::string& path);
+
 		static void PushInteger(int pInteger);
 		static void PushFloat(float pFloat);
 		static void PushString(std::string pString);
@@ -256,7 +260,7 @@ namespace lw {
 
 		template<typename T>
 		static T* GetUserData() {
-			return GetUserData<T>(GetCurrentState());
+			return GetUserData<T>(-lua_gettop(GetCurrentState()));
 		};
 		template<typename T>
 		static T* GetUserData(int index) {
@@ -298,6 +302,7 @@ namespace lw {
 		static std::vector<std::string> mMetaTables;
 		
 		static std::map<std::string, unsigned int> mLuaStateMap;
+		static std::string mLuaBasePath;
 	private:
 		static void CallLuaFun(const std::string & pFuncName);
 		static void CallLuaFun(const std::string & pFuncName, int pArg, int pResults);

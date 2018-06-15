@@ -7,7 +7,7 @@
 #include <iostream>
 
 // In LuaWrapper
-// TODO: clean code, use _get to give Lua an instance of a ILuaMember
+// TODO: clean code
 
 int main()
 {
@@ -16,10 +16,18 @@ int main()
 
 	sf::ContextSettings settings;
 	settings.antialiasingLevel = 8;
-	sf::RenderWindow window(sf::VideoMode(WORLD_WIDTH, WORLD_HEIGHT), "Lua Test Game!", sf::Style::Default, settings);
+
+	std::string title = "Lua Test Game!";
+	sf::RenderWindow window(sf::VideoMode(WORLD_WIDTH, WORLD_HEIGHT), title, sf::Style::Default, settings);
+
+	sf::Clock clock;
 
 	LogicManager logicManager;
+	float dt = 0;
+	float time = 0;
+	double accumulator = 0.0;
 
+	window.setFramerateLimit(FPS);
 	while (window.isOpen())
 	{
 		sf::Event event;
@@ -33,7 +41,17 @@ int main()
 
 		window.clear();
 
-		logicManager.Update(window);
+		dt = clock.restart().asSeconds();
+		float fps = 1.f / dt;
+		time += dt;
+
+		if (time >= 1.0f) {
+			time = 0.0f;
+			window.setTitle(title + ", FPS: " + std::to_string(fps));
+		}
+
+		logicManager.Update(dt);
+		logicManager.Draw(window);
 
 		window.display();
 	}

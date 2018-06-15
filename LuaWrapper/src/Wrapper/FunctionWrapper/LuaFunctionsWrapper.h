@@ -36,7 +36,7 @@ luaL_Reg mFuncList[] = { __VA_ARGS__, { NULL, NULL } };\
 lw::LuaFunctionsWrapper::RegisterCObject(&##obj, mFuncList);
 
 #define LW_function(name, function) { ##name, lw::LuaFunctionsWrapper::GetRegisterFunction(##name, &LW__obj, &##function) }
-#define LW_function2(name, obj, function) { ##name, lw::LuaFunctionsWrapper::GetRegisterFunction(##name, &##obj, &##function) }
+#define LW_function2(name, type, function) { ##name, lw::LuaFunctionsWrapper::GetRegisterFunction(##name, &(##type&)LW__obj, &##function) }
 #define LW_ReturnValues(...) lw::LuaFunctionsWrapper::ReturnValuesToLua(__VA_ARGS__)
 #define LW_ReturnType auto
 #define LW_SetReturnValues(...) returnValues = std::make_tuple(__VA_ARGS__)
@@ -63,17 +63,6 @@ namespace lw {
 		};
 
 	private:
-		// For checking if two classes is the same
-		template <class A, class B>
-		struct eq {
-			static const bool result = false;
-		};
-		// For checking if two classes is the same
-		template<class A>
-		struct eq<A, A> {
-			static const bool result = true;
-		};
-
 		/*----------------------- Function for Lua to c functions -----------------------------*/
 		template<typename Ret, typename... Args>
 		struct CallAndRet {
@@ -100,7 +89,7 @@ namespace lw {
 		struct CallFunc {
 			template<typename Ret, typename... Args> struct Function {
 				static void CallAndPush(const std::string &name) {
-					LuaManager::Push<Ret>(LuaManager::GetCurrentState(), LuaFunctionsWrapper::CallMemFunction<Ret>(name, LuaManager::Get<Args>(LuaManager::GetCurrentState())...));
+					LuaManager::Push<Ret>(LuaFunctionsWrapper::CallMemFunction<Ret>(name, LuaManager::Get<Args>(LuaManager::GetCurrentState())...));
 				}
 			};
 			template<> struct Function<void, Args...> {
@@ -122,7 +111,7 @@ namespace lw {
 
 			int stackSize = LuaManager::StackSize() - sizeof...(Args);
 			CallAndPush<Ret, Args...>(function);
-			if (!eq<void, Ret>::result)
+			if (!std::is_same<void, Ret>::value)
 			{
 				if (std::is_base_of<Base_of_ReturnToLua, Ret>::value) {
 					return LuaManager::StackSize() - stackSize;
@@ -141,7 +130,7 @@ namespace lw {
 
 			int stackSize = LuaManager::StackSize() - sizeof...(Args);
 			CallAndPush<Ret, Args...>(functionName);
-			if (!eq<void, Ret>::result)
+			if (!std::is_same<void, Ret>::value)
 			{
 				if (std::is_base_of<Base_of_ReturnToLua, Ret>::value) {
 					return LuaManager::StackSize() - stackSize;

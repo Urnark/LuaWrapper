@@ -17,6 +17,7 @@ public:
 	LogicManager();
 	~LogicManager();
 
-	void Update(sf::RenderTarget& target);
+	void Update(float dt);
+	void Draw(sf::RenderTarget& target);
 };
 

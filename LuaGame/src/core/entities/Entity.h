@@ -18,6 +18,11 @@ public:
 		return LW_ReturnValues(position.x, position.y);
 	};
 
+	void SetPosition(float x, float y) { 
+		position.x = x; 
+		position.y = y;
+	}
+
 	void Draw(sf::RenderTarget& target);
 };
 

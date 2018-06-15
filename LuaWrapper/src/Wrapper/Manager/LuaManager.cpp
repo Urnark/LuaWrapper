@@ -19,6 +19,7 @@ std::vector<lua_State*> LuaManager::mLs;
 std::vector<std::string> LuaManager::mMetaTables;
 unsigned int LuaManager::mCurrentState = 0;
 std::map<std::string, unsigned int> LuaManager::mLuaStateMap;
+std::string LuaManager::mLuaBasePath = "";
 int LuaManager::DEBUG_FLAGS = 0;
 
 LuaManager::LuaManager()
@@ -71,10 +72,11 @@ void LuaManager::CreateLuaState(const std::string & pLuaStateName)
 
 void LuaManager::LoadScript(const std::string & pPath)
 {
-	int error = luaL_loadfile(GetCurrentState(), pPath.c_str()) || lua_pcall(GetCurrentState(), 0, 0, 0);
+	std::string realPath = mLuaBasePath + "/" + pPath.c_str();
+	int error = luaL_loadfile(GetCurrentState(), realPath.c_str()) || lua_pcall(GetCurrentState(), 0, 0, 0);
 	if (error)
 	{
-		LW_PRINT_ERROR("could not load lua script [" << pPath << "]")
+		LW_PRINT_ERROR("could not load lua script [" << realPath << "]")
 		lua_pop(GetCurrentState(), 1);
 		PrintStackSize();
 	}
@@ -141,6 +143,20 @@ lua_State * LuaManager::GetCurrentState()
 unsigned int LuaManager::GetCurrentStateIndex()
 {
 	return mCurrentState;
+}
+
+void LuaManager::SetLuaBasePath(const std::string & path)
+{
+	mLuaBasePath = path;
+	lua_getglobal(GetCurrentState(), "package");
+	lua_getfield(GetCurrentState(), -1, "path");
+	std::string cur_path = GetString();
+	cur_path.append(";./");
+	cur_path.append(path.c_str());
+	cur_path.append("/?.lua");
+	PushString(cur_path.c_str());
+	lua_setfield(GetCurrentState(), -2, "path");
+	lua_pop(GetCurrentState(), 1);
 }
 
 void LuaManager::PushInteger(int pInteger)

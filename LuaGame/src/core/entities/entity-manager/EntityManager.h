@@ -23,7 +23,7 @@ public:
 	EntityManager();
 	~EntityManager();
 
-	void CreatePlayer(float x, float y);
+	void CreatePlayer(float x, float y, float speed);
 	Player* GetPlayer();
 	void Draw(sf::RenderTarget& target);
 };

@@ -24,13 +24,15 @@ EntityManager::~EntityManager()
 	entities.clear();
 }
 
-void EntityManager::CreatePlayer(float x, float y)
+void EntityManager::CreatePlayer(float x, float y, float speed)
 {
-	player = new Player(x, y);
+	player = new Player(x, y, speed);
 
 	LW_RegisterCObjectFunctions(*player,
-		LW_function("Print", Player::Print),
-		LW_function2("GetPosition", (Entity)*player, Player::GetPosition)
+		LW_function2("GetPosition", Entity, Player::GetPosition),
+		LW_function2("SetPosition", Entity, Player::SetPosition),
+		LW_function("GetSpeed", Player::GetSpeed),
+		LW_function("SetSpeed", Player::SetSpeed)
 	);
 
 	entities.push_back(player);
