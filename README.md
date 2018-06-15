@@ -319,8 +319,8 @@ void main() {
   // If the functions that the class instance shall be able to call is in the base class Bar that inherit from ILuaMember
   Foo foo;
   LW_RegisterCObjectFunctions(foo,
-    LW_function2("IsPositive", (Bar)foo, Foo::IsPositive), 
-    LW_function2("Print", (Bar)foo, Foo::Print)
+    LW_baseClassFunction("IsPositive", Bar, Foo::IsPositive), 
+    LW_baseClassFunction("Print", Bar, Foo::Print)
   );
   
   // Load a Lua script
