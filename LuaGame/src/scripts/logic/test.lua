@@ -1,7 +1,5 @@
 -- Test.lua --
 
-print("Hello from Test.lua!!")
-
 -- get keyboard inputs
 local keyboard = require("utils/keyboard")
 

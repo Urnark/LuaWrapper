@@ -36,7 +36,7 @@ luaL_Reg mFuncList[] = { __VA_ARGS__, { NULL, NULL } };\
 lw::LuaFunctionsWrapper::RegisterCObject(&##obj, mFuncList);
 
 #define LW_function(name, function) { ##name, lw::LuaFunctionsWrapper::GetRegisterFunction(##name, &LW__obj, &##function) }
-#define LW_function2(name, type, function) { ##name, lw::LuaFunctionsWrapper::GetRegisterFunction(##name, &(##type&)LW__obj, &##function) }
+#define LW_baseClassFunction(name, type, function) { ##name, lw::LuaFunctionsWrapper::GetRegisterFunction(##name, &(##type&)LW__obj, &##function) }
 #define LW_ReturnValues(...) lw::LuaFunctionsWrapper::ReturnValuesToLua(__VA_ARGS__)
 #define LW_ReturnType auto
 #define LW_SetReturnValues(...) returnValues = std::make_tuple(__VA_ARGS__)
