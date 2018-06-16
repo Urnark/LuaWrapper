@@ -132,6 +132,7 @@
     <ClCompile Include="src\core\entities\player\Player.cpp" />
     <ClCompile Include="src\core\entities\Entity.cpp" />
     <ClCompile Include="src\core\entities\entity-manager\EntityManager.cpp" />
+    <ClCompile Include="src\core\entities\wall\Wall.cpp" />
     <ClCompile Include="src\core\logic-manager\LogicManager.cpp" />
     <ClCompile Include="src\core\utils\keyboard\Keyboard.cpp" />
     <ClCompile Include="src\Game.cpp" />
@@ -152,6 +153,7 @@
     <ClInclude Include="src\core\entities\player\Player.h" />
     <ClInclude Include="src\core\entities\Entity.h" />
     <ClInclude Include="src\core\entities\entity-manager\EntityManager.h" />
+    <ClInclude Include="src\core\entities\wall\Wall.h" />
     <ClInclude Include="src\core\logic-manager\LogicManager.h" />
     <ClInclude Include="src\core\utils\keyboard\Keyboard.h" />
     <ClInclude Include="src\core\utils\point\Point2f.h" />

@@ -1,18 +1,18 @@
 #include "EntityManager.h"
 
-#include "../../../GameDef.h"
+#include <Wrapper\FunctionWrapper\LuaFunctionsWrapper.h>
 
-void EntityManager::loadLua()
-{
-	registerFunctions();
-}
+#include "../../../GameDef.h"
 
 void EntityManager::registerFunctions()
 {
+	//lw::LuaFunctionsWrapper::RegisterCFunction("GetEntity", this, &EntityManager::GetEntity);
+	//lw::LuaFunctionsWrapper::RegisterCFunction("GetNrOfEntities", this, &EntityManager::GetNrOfEntities);
 }
 
 EntityManager::EntityManager()
 {
+	registerFunctions();
 }
 
 EntityManager::~EntityManager()
@@ -41,6 +41,32 @@ void EntityManager::CreatePlayer(float x, float y, float speed)
 Player* EntityManager::GetPlayer()
 {
 	return player;
+}
+
+void EntityManager::CreateWall(float x, float y)
+{
+	entities.push_back(new Wall(x, y));
+}
+
+Entity * EntityManager::GetEntity(int index) const
+{
+	return entities[index];
+}
+
+int EntityManager::GetNrOfEntities() const
+{
+	return entities.size();
+}
+
+void EntityManager::Update(float dt)
+{
+	for (Entity* entity : entities)
+	{
+		if (dynamic_cast<Player*>(entity))
+		{
+			//lw::LuaManager::CallLuaFunction<void>("");
+		}
+	}
 }
 
 void EntityManager::Draw(sf::RenderTarget& target)

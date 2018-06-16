@@ -2,10 +2,9 @@
 
 #include <SFML\Graphics.hpp>
 
-#include <Wrapper\FunctionWrapper\LuaFunctionsWrapper.h>
-
 #include "../Entity.h"
 #include "../player/Player.h"
+#include "../wall/Wall.h"
 
 #include <vector>
 
@@ -16,7 +15,6 @@ private:
 	Player* player;
 
 private:
-	void loadLua();
 	void registerFunctions();
 
 public:
@@ -25,6 +23,13 @@ public:
 
 	void CreatePlayer(float x, float y, float speed);
 	Player* GetPlayer();
+
+	void CreateWall(float x, float y);
+
+	Entity* GetEntity(int index) const;
+	int GetNrOfEntities() const;
+
+	void Update(float dt);
 	void Draw(sf::RenderTarget& target);
 };
 

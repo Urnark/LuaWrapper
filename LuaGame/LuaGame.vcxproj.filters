@@ -33,6 +33,9 @@
     <ClCompile Include="src\core\utils\keyboard\Keyboard.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\core\entities\wall\Wall.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\core\logic-manager\LogicManager.h">
@@ -54,6 +57,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\core\utils\point\Point2f.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\entities\wall\Wall.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

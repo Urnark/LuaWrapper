@@ -12,7 +12,7 @@ protected:
 
 public:
 	Entity(float x, float y);
-	~Entity();
+	virtual ~Entity();
 
 	Point2f GetPosition() const {
 		return position;

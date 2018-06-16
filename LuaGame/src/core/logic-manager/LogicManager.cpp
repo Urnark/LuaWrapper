@@ -10,6 +10,9 @@ void LogicManager::init()
 {
 	LuaFunctionsWrapper::RegisterCFunction("CreatePlayer", &entityManager, &EntityManager::CreatePlayer);
 	LuaFunctionsWrapper::RegisterCFunction("GetPlayer", &entityManager, &EntityManager::GetPlayer);
+	LuaFunctionsWrapper::RegisterCFunction("GetEntity", &entityManager, &EntityManager::GetEntity);
+	LuaFunctionsWrapper::RegisterCFunction("GetNrOfEntities", &entityManager, &EntityManager::GetNrOfEntities);
+	LuaFunctionsWrapper::RegisterCFunction("CreateWall", &entityManager, &EntityManager::CreateWall);
 
 	// Register keyboard input
 	LuaFunctionsWrapper::RegisterCFunction("IsKeyPressed", &Keyboard::IsKeyPressed);

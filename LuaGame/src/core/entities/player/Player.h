@@ -9,7 +9,7 @@ private:
 
 public:
 	Player(float x, float y, float speed);
-	~Player();
+	virtual ~Player();
 
 	float GetSpeed() const { return speed; }
 	void SetSpeed(float speed) { this->speed = speed; }
