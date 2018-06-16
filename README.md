@@ -192,7 +192,7 @@ void main() {
     std::cout << LuaManager::GetString() << std::endl;
   }
   else // Remember to remove the return values from the Lua stack if not used
-    lua_pop(LuaManager::GetCurrentState(), -1);
+    LuaManager::Pop();
     
   // Call the Lua function "bar"
   std::string messageFromBar = LuaManager::CallLuaFunction<std::string>("foo");
@@ -280,7 +280,7 @@ The function that is used to register c++ function for Lua to use as a member fu
 ```c++
 LW_RegisterCObjectFunctions(classInstance, LW_function(functionName, function)...);
 ```
-- classInstance = the class that the function is a member function of
+- classInstance = the pointer to the class instance that the function is a member function of
 - LW_function(functionName, function)... = for all the functions that the class instance shall be able to use.
 ```c++
 LW_function(functionName, function);
@@ -311,14 +311,14 @@ void main() {
   LuaManager::InitLuaManager();
   
   Bar bar;
-  LW_RegisterCObjectFunctions(bar,
+  LW_RegisterCObjectFunctions(&bar,
     LW_function("IsPositive", Bar::IsPositive), 
     LW_function("Print", Bar::Print)
   );
   
   // If the functions that the class instance shall be able to call is in the base class Bar that inherit from ILuaMember
   Foo foo;
-  LW_RegisterCObjectFunctions(foo,
+  LW_RegisterCObjectFunctions(&foo,
     LW_baseClassFunction("IsPositive", Bar, Foo::IsPositive), 
     LW_baseClassFunction("Print", Bar, Foo::Print)
   );
