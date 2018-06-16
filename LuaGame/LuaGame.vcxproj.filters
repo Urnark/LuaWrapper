@@ -30,7 +30,7 @@
     <ClCompile Include="src\core\entities\entity-manager\EntityManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\core\utils\Keyboard.cpp">
+    <ClCompile Include="src\core\utils\keyboard\Keyboard.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -50,7 +50,10 @@
     <ClInclude Include="src\core\entities\entity-manager\EntityManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\core\utils\Keyboard.h">
+    <ClInclude Include="src\core\utils\keyboard\Keyboard.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\utils\point\Point2f.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -58,5 +61,7 @@
     <None Include="src\scripts\logic\test.lua" />
     <None Include="src\scripts\init\init.lua" />
     <None Include="src\scripts\utils\keyboard.lua" />
+    <None Include="src\scripts\logic\entities\player.lua" />
+    <None Include="src\scripts\logic\entities\entity.lua" />
   </ItemGroup>
 </Project>

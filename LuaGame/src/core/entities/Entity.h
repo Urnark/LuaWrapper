@@ -2,20 +2,20 @@
 
 #include <SFML\Graphics.hpp>
 
-#include <Wrapper\FunctionWrapper\LuaFunctionsWrapper.h>
+#include "../utils/point/Point2f.h"
 
 class Entity : public lw::ILuaMember
 {
 protected:
 	sf::RectangleShape shape;
-	sf::Vector2f position;
+	Point2f position;
 
 public:
 	Entity(float x, float y);
 	~Entity();
 
-	LW_ReturnType GetPosition() const {
-		return LW_ReturnValues(position.x, position.y);
+	Point2f GetPosition() const {
+		return position;
 	};
 
 	void SetPosition(float x, float y) { 

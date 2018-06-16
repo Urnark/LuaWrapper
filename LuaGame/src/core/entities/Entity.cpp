@@ -12,6 +12,6 @@ Entity::~Entity()
 
 void Entity::Draw(sf::RenderTarget & target)
 {
-	shape.setPosition(position);
+	shape.setPosition(position.getPos());
 	target.draw(shape);
 }

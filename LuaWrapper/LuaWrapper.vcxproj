@@ -86,6 +86,9 @@
     <ClInclude Include="src\Wrapper\FunctionWrapper\LuaFunctionsWrapper.h" />
     <ClInclude Include="src\Wrapper\Manager\LuaManager.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="src\Wrapper\LuaLibs\utils.lua" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{BA6E6B79-0C82-491A-8D04-9D70055EBB7E}</ProjectGuid>

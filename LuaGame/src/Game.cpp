@@ -27,7 +27,7 @@ int main()
 	float time = 0;
 	double accumulator = 0.0;
 
-	window.setFramerateLimit(FPS);
+	window.setFramerateLimit((unsigned int)FPS);
 	while (window.isOpen())
 	{
 		sf::Event event;

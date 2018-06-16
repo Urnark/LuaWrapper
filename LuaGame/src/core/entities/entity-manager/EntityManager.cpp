@@ -28,7 +28,7 @@ void EntityManager::CreatePlayer(float x, float y, float speed)
 {
 	player = new Player(x, y, speed);
 
-	LW_RegisterCObjectFunctions(*player,
+	LW_RegisterCObjectFunctions(player,
 		LW_baseClassFunction("GetPosition", Entity, Player::GetPosition),
 		LW_baseClassFunction("SetPosition", Entity, Player::SetPosition),
 		LW_function("GetSpeed", Player::GetSpeed),

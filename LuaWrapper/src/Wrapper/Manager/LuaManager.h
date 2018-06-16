@@ -1,5 +1,24 @@
 #pragma once
 
+/*
+MIT License
+
+Copyright (c) 2018 Urnark
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation
+files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify,
+merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
+
 #include "../../Lua/lua.hpp"
 
 #include "../EntityHandeler/ILuaMember.h"
@@ -81,12 +100,12 @@ namespace lw {
 			iterateGetTuple<size - 1, Args...>{}(t, tu);
 		}
 
-		private:
+	private:
 		inline static void _push(lua_State * pL, ILuaMember* luaMember) {
-			ILuaMember** ptr = reinterpret_cast<ILuaMember**>(lua_newuserdata(LuaManager::GetCurrentState(), sizeof(ILuaMember*)));
-			*ptr = luaMember;
+			//ILuaMember** ptr = reinterpret_cast<ILuaMember**>(lua_newuserdata(LuaManager::GetCurrentState(), sizeof(ILuaMember*)));
+			//*ptr = luaMember;
 			luaL_getmetatable(LuaManager::GetCurrentState(), LuaManager::GetMetaTable(std::to_string(luaMember->GetID())).c_str());
-			lua_setmetatable(LuaManager::GetCurrentState(), -2);
+			//lua_setmetatable(LuaManager::GetCurrentState(), -2);
 		}
 
 		template<typename ...Args>
@@ -113,7 +132,7 @@ namespace lw {
 			LuaManager::PushFloat(pL, arg);
 		}
 		inline static void _push(lua_State * pL, double arg) {
-			LuaManager::PushFloat(pL, arg);
+			LuaManager::PushDouble(pL, arg);
 		}
 
 		template <typename Ret>
@@ -121,9 +140,9 @@ namespace lw {
 			if (!std::is_base_of<ILuaMember, std::remove_pointer<Ret>::type>::value)
 				LW_PRINT_ERROR("Argument for [_get] is not a ILuaMember");
 			if constexpr (std::is_pointer<Ret>::value)
-				return LuaManager::GetUserData<std::remove_pointer<Ret>::type>();
+				return GetUserDataFromTable<std::remove_pointer<Ret>::type>();//LuaManager::GetUserData<std::remove_pointer<Ret>::type>();
 			else
-				return *LuaManager::GetUserData<std::remove_pointer<Ret>::type>();
+				return *GetUserDataFromTable<std::remove_pointer<Ret>::type>();//*LuaManager::GetUserData<std::remove_pointer<Ret>::type>();
 		}
 
 		template <>
@@ -141,6 +160,10 @@ namespace lw {
 		template <>
 		inline static float _get<float>(lua_State * pL) {
 			return LuaManager::GetFloat(pL);
+		}
+		template <>
+		inline static double _get<double>(lua_State * pL) {
+			return LuaManager::GetDouble(pL);
 		}
 
 		template<typename Ret, typename... Args>
@@ -167,6 +190,9 @@ namespace lw {
 				}
 			};
 		};
+
+
+		static void _LoadScript(lua_State * pL, const std::string & pPath);
 
 	public:
 		// Push values to lua
@@ -223,6 +249,10 @@ namespace lw {
 		static void UseLuaState(const std::string & pLuaStateName);
 		static void CreateLuaState(const std::string & pLuaStateName);
 
+		static void LoadLib(const std::string & pPath);
+		static void LoadLib(const std::string & pLuaStateName, const std::string & pPath);
+		static void LoadLib(unsigned int pLuaStateIndex, const std::string & pPath);
+
 		static void LoadScript(const std::string & pPath);
 		static void LoadScript(const std::string & pLuaStateName, const std::string & pPath);
 		static void LoadScript(unsigned int pLuaStateIndex, const std::string & pPath);
@@ -230,33 +260,51 @@ namespace lw {
 		static lua_State * GetCurrentState();
 		static unsigned int GetCurrentStateIndex();
 
-		static void SetLuaBasePath(const std::string& path);
+		static void SetLuaBaseDirectory(const std::string& path);
+		static void SetLuaLibsDirectory(const std::string& path);
+
+		static void Pop(int index = -1);
+		static void RemoveFromStack(int index);
 
 		static void PushInteger(int pInteger);
 		static void PushFloat(float pFloat);
+		static void PushDouble(double pDouble);
 		static void PushString(std::string pString);
 		static void PushBool(bool pBool);
 
-
 		static void PushInteger(lua_State *& pL, int pInteger);
 		static void PushFloat(lua_State *& pL, float pFloat);
+		static void PushDouble(lua_State *& pL, double pDouble);
 		static void PushString(lua_State *& pL, std::string pString);
 		static void PushBool(lua_State *& pL, bool pBool);
 
 		static int GetInteger();
 		static float GetFloat();
+		static double GetDouble();
 		static std::string GetString();
 		static bool GetBool();
 
 		static int GetInteger(lua_State *& pL);
 		static float GetFloat(lua_State *& pL);
+		static double GetDouble(lua_State *& pL);
 		static std::string GetString(lua_State *& pL);
 		static bool GetBool(lua_State *& pL);
 
 		static int GetInteger(int params);
 		static float GetFloat(int params);
+		static double GetDouble(int params);
 		static std::string GetString(int params);
 		static bool GetBool(int params);
+
+		template<typename T>
+		static T* GetUserDataFromTable() {
+			int index = -lua_gettop(LuaManager::GetCurrentState());
+			lua_getfield(LuaManager::GetCurrentState(), index, "ptr");
+			T* obj = (T*)lua_touserdata(LuaManager::GetCurrentState(), -1);
+			lua_remove(LuaManager::GetCurrentState(), -1);
+			LuaManager::RemoveFromStack(index);
+			return obj;
+		};
 
 		template<typename T>
 		static T* GetUserData() {
@@ -285,7 +333,8 @@ namespace lw {
 
 		/* C++ functions */
 		// Need to be called before the script that has the functions is loaded
-		static void RegisterObjectFunctions(const std::string & pObjectName, luaL_Reg sMonsterRegs[]);
+		//static void RegisterObjectFunctions(ILuaMember* member, luaL_Reg sMonsterRegs[]);
+		static void RegisterObjectFunctions(ILuaMember* member, luaL_Reg sMonsterRegs[]);
 
 		/* complementary functions for C++ functions in Lua */
 		// Retrun nullptr if <T> not exists
@@ -302,6 +351,7 @@ namespace lw {
 		static std::vector<std::string> mMetaTables;
 		
 		static std::map<std::string, unsigned int> mLuaStateMap;
+		static std::string mLibsPath;
 		static std::string mLuaBasePath;
 	private:
 		static void CallLuaFun(const std::string & pFuncName);

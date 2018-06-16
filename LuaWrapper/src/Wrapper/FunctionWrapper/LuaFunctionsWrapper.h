@@ -1,5 +1,24 @@
 #pragma once
 
+/*
+MIT License
+
+Copyright (c) 2018 Urnark
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation
+files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, 
+merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is 
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT 
+LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN 
+NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
+
 #include "../Manager/LuaManager.h"
 
 #include <vector>
@@ -33,10 +52,10 @@ if (ptr == nullptr) {\
 #define LW_RegisterCObjectFunctions(obj, ...)\
 decltype(obj) LW__obj = obj;\
 luaL_Reg mFuncList[] = { __VA_ARGS__, { NULL, NULL } };\
-lw::LuaFunctionsWrapper::RegisterCObject(&##obj, mFuncList);
+lw::LuaFunctionsWrapper::RegisterCObject(##obj, mFuncList);
 
-#define LW_function(name, function) { ##name, lw::LuaFunctionsWrapper::GetRegisterFunction(##name, &LW__obj, &##function) }
-#define LW_baseClassFunction(name, type, function) { ##name, lw::LuaFunctionsWrapper::GetRegisterFunction(##name, &(##type&)LW__obj, &##function) }
+#define LW_function(name, function) { ##name, lw::LuaFunctionsWrapper::GetRegisterFunction(##name, LW__obj, &##function) }
+#define LW_baseClassFunction(name, type, function) { ##name, lw::LuaFunctionsWrapper::GetRegisterFunction(##name, (##type*&)LW__obj, &##function) }
 #define LW_ReturnValues(...) lw::LuaFunctionsWrapper::ReturnValuesToLua(__VA_ARGS__)
 #define LW_ReturnType auto
 #define LW_SetReturnValues(...) returnValues = std::make_tuple(__VA_ARGS__)
@@ -125,9 +144,22 @@ namespace lw {
 		/* --------------- Lua C function for calling a member function with self as a parameter ---------------- */
 		template<typename Ret, typename Clazz, typename ...Args>
 		inline static int FunctionWrapper2(lua_State * L) {
-			Clazz* luaMember = LuaManager::GetUserData<Clazz>(-lua_gettop(LuaManager::GetCurrentState()));
-			std::string functionName = LuaFunctionsWrapper::GenerateFuncName(LuaManager::GetFunctionNameFromLua(), luaMember);
-
+			//Clazz* luaMember = LuaManager::GetUserData<Clazz>(-lua_gettop(LuaManager::GetCurrentState()));
+			std::string functionName;// = LuaFunctionsWrapper::GenerateFuncName(LuaManager::GetFunctionNameFromLua(), luaMember);
+			//std::cout << "type: " << LuaManager::GetType(-lua_gettop(LuaManager::GetCurrentState())) << std::endl;
+			if (LuaManager::GetType(-lua_gettop(LuaManager::GetCurrentState())) == "table")
+			{
+				int index = -lua_gettop(LuaManager::GetCurrentState());
+				lua_getfield(LuaManager::GetCurrentState(), index, "id");
+				std::string id = LuaManager::GetString();
+				LuaManager::RemoveFromStack(index);
+				functionName = std::to_string(LuaManager::GetCurrentStateIndex()) + "_" + id + "_" + LuaManager::GetFunctionNameFromLua();
+			}
+			else
+			{
+				LW_PRINT_ERROR("Not a table on the stack");
+			}
+			
 			int stackSize = LuaManager::StackSize() - sizeof...(Args);
 			CallAndPush<Ret, Args...>(functionName);
 			if (!std::is_same<void, Ret>::value)
@@ -243,7 +275,7 @@ namespace lw {
 
 		/* --------------- Register functions for a C/C++ object to be used in Lua ---------------- */
 		static void RegisterCObject(ILuaMember* member, luaL_Reg functions[]) {
-			LuaManager::RegisterObjectFunctions(std::to_string(member->GetID()), functions);
+			LuaManager::RegisterObjectFunctions(member, functions);
 		};
 
 		/* --------------- Call a member function ---------------- */

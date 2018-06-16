@@ -2,7 +2,7 @@
 
 #include <Wrapper\FunctionWrapper\LuaFunctionsWrapper.h>
 #include "../../GameDef.h"
-#include "../utils/Keyboard.h"
+#include "../utils/keyboard/Keyboard.h"
 
 using namespace lw;
 
@@ -30,11 +30,16 @@ void LogicManager::start()
 
 LogicManager::LogicManager()
 {
-	LuaManager::DEBUG_FLAGS = lw::ERRORS;
+	LuaManager::DEBUG_FLAGS = ERRORS | DEBUG_PRINTS;
 	LuaManager::InitLuaManager();
-	LuaManager::SetLuaBasePath(SCRIPTS_DIRECTORY_PATH);
+	LuaManager::SetLuaBaseDirectory(SCRIPTS_DIRECTORY_PATH);
+	LuaManager::SetLuaLibsDirectory(LUA_LIBS_DIRECTORY_PATH);
+
+	// Open the utils library
+	LuaManager::LoadLib("utils.lua");
 
 	init();
+
 }
 
 LogicManager::~LogicManager()
@@ -44,9 +49,10 @@ LogicManager::~LogicManager()
 
 void LogicManager::Update(float dt)
 {
-	Player* p = LuaManager::CallLuaFunction<Player*>("Update", dt);
-	//std::cout << "Player: " << std::get<0>(p->GetPosition().returnValues) << ", " << std::get<1>(p->GetPosition().returnValues) << std::endl;
-
+	LuaManager::CallLuaFunction<void>("WorldUpdate", dt);
+	//Player* p = LuaManager::CallLuaFunction<Player*>("WorldUpdate", dt);
+	//std::cout << "Player: " << p->GetPosition().x << ", " << p->GetPosition().y << std::endl;
+	
 	Keyboard::Update();
 }
 
