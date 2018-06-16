@@ -261,7 +261,7 @@ void main() {
   LuaManager::CloseLuaManager();
 }
 ```
-Need to register functions before calling "LoadScript". Else you can need to call c++ functions in a Lua function
+Need to register functions before calling "LoadScript". Else you can not call the c++ functions from Lua.
 
 In the Lua script
 ```Lua
