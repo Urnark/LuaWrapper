@@ -14,8 +14,7 @@ function InitWorld(world_width, world_height)
 
 	-- Create the walls
 	local index = GetNrOfEntities()
-	for i = 0, 5, 1 do
-		entities[i] = CreateWall(30 * i, 0)
+	for x = 0, world_width / 30, 1 do
+		entities[index + x] = CreateWall(30 * x, 0)
 	end
-
 end
